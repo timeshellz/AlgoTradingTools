@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utilities\AlgoTrading.Utilities.csproj" />
+    <ProjectReference Include="..\DataKeeping\AlgoTrading.DataKeeping.csproj" />
+    <ProjectReference Include="..\Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj" />
+    <ProjectReference Include="..\JsonScriptIndexManager\AlgoTrading.TradeOptimizer.IndexManagers.JsonScript.csproj" />
+  </ItemGroup>
+
+</Project>

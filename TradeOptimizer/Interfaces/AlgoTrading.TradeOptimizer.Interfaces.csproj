@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj" />
+    <ProjectReference Include="..\..\..\StockData\AlgoTrading.Stocks.csproj" />
+    <ProjectReference Include="..\NeuralNetwork\AlgoTrading.Neural.csproj" />
+  </ItemGroup>
+
+</Project>

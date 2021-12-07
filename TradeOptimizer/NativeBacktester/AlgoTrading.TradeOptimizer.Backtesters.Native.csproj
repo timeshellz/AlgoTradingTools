@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj" />
+    <ProjectReference Include="..\..\..\StockData\AlgoTrading.Stocks.csproj" />
+    <ProjectReference Include="..\DataKeeping\AlgoTrading.DataKeeping.csproj" />
+    <ProjectReference Include="..\Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

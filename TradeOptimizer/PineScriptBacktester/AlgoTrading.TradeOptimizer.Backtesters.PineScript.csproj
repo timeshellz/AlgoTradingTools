@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenQA.Selenium.Chrome.ChromeDriverExtensions" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TradeOptimizer\Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj" />
+    <ProjectReference Include="..\TradeOptimizer\JsonScriptIndexManager\AlgoTrading.TradeOptimizer.IndexManagers.JsonScript.csproj" />
+    <ProjectReference Include="..\TradeOptimizer\PineScriptIndexManager\AlgoTrading.TradeOptimizer.IndexManagers.PineScript.csproj" />
+  </ItemGroup>
+
+</Project>
