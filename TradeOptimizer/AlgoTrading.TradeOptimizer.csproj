@@ -56,22 +56,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.11.34.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>packages\HtmlAgilityPack.1.11.34\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <HintPath>..\packages\HtmlAgilityPack.1.11.34\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Net.Http.2.0.20505.0\lib\net40\System.Net.Http.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Net.Http.2.0.20505.0\lib\net40\System.Net.Http.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Net.Http.2.0.20505.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Net.Http.2.0.20505.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
@@ -82,10 +82,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
+      <HintPath>..\packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver.Support, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Selenium.Support.3.141.0\lib\net45\WebDriver.Support.dll</HintPath>
+      <HintPath>..\packages\Selenium.Support.3.141.0\lib\net45\WebDriver.Support.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -100,27 +100,27 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AlgoTrading\TradeOptimizer\GeneticAlgorithm\AlgoTrading.TradeOptimizer.Genetics.csproj">
+    <ProjectReference Include="GeneticAlgorithm\AlgoTrading.TradeOptimizer.Genetics.csproj">
       <Project>{5b876324-b41c-4d53-98df-6ac943c5ca39}</Project>
       <Name>AlgoTrading.TradeOptimizer.Genetics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AlgoTrading\TradeOptimizer\JsonScriptIndexManager\AlgoTrading.TradeOptimizer.IndexManagers.JsonScript.csproj">
+    <ProjectReference Include="JsonScriptIndexManager\AlgoTrading.TradeOptimizer.IndexManagers.JsonScript.csproj">
       <Project>{be1ac9b9-3b32-4546-9f77-f428ebd5fc77}</Project>
       <Name>AlgoTrading.TradeOptimizer.IndexManagers.JsonScript</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AlgoTrading\TradeOptimizer\PythonScriptBacktester\AlgoTrading.TradeOptimizer.Backtesters.Python.csproj">
+    <ProjectReference Include="PythonScriptBacktester\AlgoTrading.TradeOptimizer.Backtesters.Python.csproj">
       <Project>{1f015b60-87e4-4dab-bad5-3fabd62b640b}</Project>
       <Name>AlgoTrading.TradeOptimizer.Backtesters.Python</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AlgoTrading\Utilities\AlgoTrading.Utilities.csproj">
+    <ProjectReference Include="..\Utilities\AlgoTrading.Utilities.csproj">
       <Project>{bfc7e5ef-4526-4f02-86f8-e0b06293a40f}</Project>
       <Name>AlgoTrading.Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="TradeOptimizer\DataKeeping\AlgoTrading.DataKeeping.csproj">
+    <ProjectReference Include="DataKeeping\AlgoTrading.DataKeeping.csproj">
       <Project>{ddb92a5c-e5fa-4203-9c07-18671d433e27}</Project>
       <Name>AlgoTrading.DataKeeping</Name>
     </ProjectReference>
-    <ProjectReference Include="TradeOptimizer\Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj">
+    <ProjectReference Include="Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj">
       <Project>{1369e245-6cb2-47a8-9ee8-68936d9c6ffa}</Project>
       <Name>AlgoTrading.TradeOptimizer.Interfaces</Name>
     </ProjectReference>
