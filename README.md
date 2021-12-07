@@ -15,6 +15,7 @@ All code (excluding external libraries) has been implemented from the ground up.
     - Implements Priority Memory Replay.
     - Implements N-step learning.
     - Implements Distributional (Categorical) answer generation.
+    - Custom internal Broker Emulator.
     - Selectable and downloadable stock tickers to test against.
     - User interface with statistics graphs.
     - Ability to start, stop, load, save learning process.
