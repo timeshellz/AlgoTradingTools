@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cyotek.CircularBuffer" Version="1.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Skender.Stock.Indicators" Version="1.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
+    <ProjectReference Include="..\Utilities\AlgoTrading.Utilities.csproj" />
+  </ItemGroup>
+
+</Project>

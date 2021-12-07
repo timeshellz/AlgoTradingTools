@@ -70,15 +70,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj">
+    <ProjectReference Include="..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj">
       <Project>{abd5b1cf-8e7c-4829-9c0e-e243b2b64640}</Project>
       <Name>AlgoTrading.SimulatedBroker</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DQN\AlgoTrading.DQN.csproj">
+    <ProjectReference Include="..\DQN\AlgoTrading.DQN.csproj">
       <Project>{d5e92c99-b17b-4721-b2ce-390fc9caa96e}</Project>
       <Name>AlgoTrading.DQN</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StockData\AlgoTrading.Stocks.csproj">
+    <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj">
       <Project>{b159a64a-f176-4020-b54d-2146e2b945d2}</Project>
       <Name>AlgoTrading.Stocks</Name>
     </ProjectReference>

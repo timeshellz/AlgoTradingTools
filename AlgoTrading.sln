@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.TradeOptimizer", "AlgoTrading.TradeOptimizer.csproj", "{6F32A444-7E22-49E1-895C-2CBE5FC62901}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeOptimizer\AlgoTrading.TradeOptimizer", "AlgoTrading.TradeOptimizer.csproj", "{6F32A444-7E22-49E1-895C-2CBE5FC62901}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49C830CF-2186-4811-9AC4-C01C03A587F6}"
 EndProject
@@ -29,13 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.Neural", "Trade
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.TradeOptimizer.Interfaces", "TradeOptimizer\Interfaces\AlgoTrading.TradeOptimizer.Interfaces.csproj", "{1369E245-6CB2-47A8-9EE8-68936D9C6FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.SimulatedBroker", "..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj", "{ABD5B1CF-8E7C-4829-9C0E-E243B2B64640}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.SimulatedBroker", "BrokerEmulator\AlgoTrading.SimulatedBroker.csproj", "{ABD5B1CF-8E7C-4829-9C0E-E243B2B64640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Stocks", "..\StockData\AlgoTrading.Stocks.csproj", "{B159A64A-F176-4020-B54D-2146E2B945D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Stocks", "StockData\AlgoTrading.Stocks.csproj", "{B159A64A-F176-4020-B54D-2146E2B945D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN", "..\DQN\AlgoTrading.DQN.csproj", "{D5E92C99-B17B-4721-B2CE-390FC9CAA96E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN", "DQN\AlgoTrading.DQN.csproj", "{D5E92C99-B17B-4721-B2CE-390FC9CAA96E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.UserInterface", "..\DQNUserInterface\AlgoTrading.DQN.UserInterface.csproj", "{05AB2A77-2B55-4182-AA62-86590027C451}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.UserInterface", "DQNUserInterface\AlgoTrading.DQN.UserInterface.csproj", "{05AB2A77-2B55-4182-AA62-86590027C451}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
