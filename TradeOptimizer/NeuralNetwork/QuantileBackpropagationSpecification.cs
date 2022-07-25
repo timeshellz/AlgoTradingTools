@@ -8,11 +8,11 @@ namespace AlgoTrading.Neural
     {
         public string TargetName { get; set; }
         public double TemporalDifference { get; set; }
-        public NeuralSettings.PredictionMechanism PredictionType { get; set; }
+        public NeuralConfiguration.PredictionMechanism PredictionType { get; set; }
 
         public QuantileBackpropagationSpecification(string targetName, double temporalDifference)
         {
-            PredictionType = NeuralSettings.PredictionMechanism.CategoricalQuantile;
+            PredictionType = NeuralConfiguration.PredictionMechanism.CategoricalQuantile;
             TargetName = targetName;
             TemporalDifference = temporalDifference;
         }

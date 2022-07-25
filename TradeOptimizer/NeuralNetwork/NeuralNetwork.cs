@@ -15,9 +15,9 @@ namespace AlgoTrading.Neural
         public Dictionary<int, List<INode>> Nodes { get; private set; }
         public Dictionary<string, Dictionary<int, CategoricalOutputNeuron>> CategoricalOutputs { get; private set; }
         public List<NodeConnection> NodeConnections { get; private set; }
-        public NeuralSettings Settings { get; private set; }
+        public NeuralConfiguration Settings { get; private set; }
 
-        public NeuralNetwork(string name, NeuralSettings settings)
+        public NeuralNetwork(string name, NeuralConfiguration settings)
         {
             Name = name;
             Settings = settings;
@@ -78,7 +78,7 @@ namespace AlgoTrading.Neural
         {
             Nodes.Add(Settings.HiddenLayerCount + 1, new List<INode>());
 
-            if(Settings.PredictionType == NeuralSettings.PredictionMechanism.NonCategorical)
+            if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             {
                 foreach (string outputName in Settings.Outputs)
                 {
@@ -156,7 +156,7 @@ namespace AlgoTrading.Neural
         {
             Dictionary<string, double> output = new Dictionary<string, double>();
 
-            if(Settings.PredictionType == NeuralSettings.PredictionMechanism.NonCategorical)
+            if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             {
                 foreach (INode node in Nodes[Nodes.Count - 1])
                 {
@@ -194,7 +194,7 @@ namespace AlgoTrading.Neural
                 }
             }
 
-            if (Settings.PredictionType != NeuralSettings.PredictionMechanism.NonCategorical)
+            if (Settings.PredictionType != NeuralConfiguration.PredictionMechanism.NonCategorical)
             {
                 foreach(Dictionary<int, CategoricalOutputNeuron> atomSet in CategoricalOutputs.Values)
                 {
@@ -249,7 +249,7 @@ namespace AlgoTrading.Neural
 
         void PropagateOutputs(IBackpropagationSpecification specification)
         {
-            if(specification.PredictionType == NeuralSettings.PredictionMechanism.NonCategorical)
+            if(specification.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             {
                 foreach(INode node in Nodes[Nodes.Keys.Count - 1])
                 {
@@ -380,56 +380,48 @@ namespace AlgoTrading.Neural
         }
     }
 
-    public class NeuralSettings
+    public class NeuralConfiguration
     {
-        [JsonProperty]
-        public string NetworkName { get; private set; }
-        [JsonProperty]
-        public List<string> Inputs { get; private set; }
-        [JsonProperty]
-        public List<string> Outputs { get; private set; }
-        [JsonProperty]
-        public int HiddenLayerCount { get; private set; }
-        [JsonProperty]
-        public double LearningRate { get; private set; }
-        [JsonProperty]
-        public PredictionMechanism PredictionType { get; private set; } = PredictionMechanism.NonCategorical;
-        [JsonProperty]
-        public int AtomCount { get; private set; } = 1;
-        [JsonProperty]
-        public double MinV { get; private set; } = -10;
-        [JsonProperty]
-        public double MaxV { get; private set; } = 10;
-        [JsonProperty]
-        public double DeltaZ { get; private set; } = 0;
+        public string NetworkName { get; set; } = "DefaultNetwork";
+        public List<string> Inputs { get; set; } = new List<string>();
+        public List<string> Outputs { get; set; } = new List<string>();
+        public int HiddenLayerCount { get; set; } = 3;
+        public double LearningRate { get; set; } = 0.01;
+        public PredictionMechanism PredictionType { get; set; } = PredictionMechanism.NonCategorical;
+        public int AtomCount { get; set; } = 1;
+        public double MinV { get; set; } = -10;
+        public double MaxV { get; set; } = 10;
+        public double DeltaZ { get; set; } = 0;
         
-        public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate)
-        {
-            NetworkName = networkName.Replace(" ", "_");
-            NetworkName = NetworkName.Replace(".", "_");
-            Inputs = inputs;
-            Outputs = outputs;
-            HiddenLayerCount = hiddenLayers;
-            LearningRate = learningRate;
-        }
+        //public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate)
+        //{
+        //    NetworkName = networkName.Replace(" ", "_");
+        //    NetworkName = NetworkName.Replace(".", "_");
+        //    Inputs = inputs;
+        //    Outputs = outputs;
+        //    HiddenLayerCount = hiddenLayers;
+        //    LearningRate = learningRate;
+        //}
 
-        public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate, PredictionMechanism predictionType, int atomCount) : this(networkName, inputs, outputs, hiddenLayers, learningRate)
-        {            
-            PredictionType = predictionType;
-            AtomCount = atomCount;
+        public NeuralConfiguration() { }
 
-            if(PredictionType == PredictionMechanism.CategoricalCrossEntropy)
-            {
-                DeltaZ = (double)(MaxV - MinV) / (AtomCount - 1);
-            }
-            else
-            {
-                DeltaZ = 1d / AtomCount;
-                MinV = DeltaZ;
-                MaxV = 1;
-            }
+        //public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate, PredictionMechanism predictionType, int atomCount) : this(networkName, inputs, outputs, hiddenLayers, learningRate)
+        //{            
+        //    PredictionType = predictionType;
+        //    AtomCount = atomCount;
+
+        //    if(PredictionType == PredictionMechanism.CategoricalCrossEntropy)
+        //    {
+        //        DeltaZ = (double)(MaxV - MinV) / (AtomCount - 1);
+        //    }
+        //    else
+        //    {
+        //        DeltaZ = 1d / AtomCount;
+        //        MinV = DeltaZ;
+        //        MaxV = 1;
+        //    }
             
-        }
+        //}
 
         public enum PredictionMechanism { NonCategorical, CategoricalCrossEntropy, CategoricalQuantile}
         public enum ActivationType { Gelu, SoftMax, Linear}

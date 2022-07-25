@@ -1,0 +1,62 @@
+﻿@using TradeBubble.Components.Containers
+@using TradeBubble.Components.Layouts
+@using AlgoTrading.Neural;
+@using AlgoTrading.Agent.Learning;
+@using AlgoTrading.Broker;
+
+@using Syncfusion.Blazor.Inputs;
+
+<div class="px-3">
+    <CellPage>
+        <ContentCell ColumnWidth="3" CellTitle="Emulated Broker">
+            <h6>Initial capital</h6>
+            <p>@BrokerConfiguration.StartCapital</p>
+            <h6>Commission</h6>
+            <p>@BrokerConfiguration.Commission</p>
+        </ContentCell>
+        <ContentCell ColumnWidth="3" CellTitle="Neural Network">
+            <h6>Name</h6>
+            <p>@NeuralConfiguration.NetworkName</p>
+            <h6>Hidden layers</h6>
+            <p>@NeuralConfiguration.HiddenLayerCount</p>
+            <h6>Learning rate</h6>
+            <p>@NeuralConfiguration.LearningRate</p>
+        </ContentCell>
+        <ContentCell ColumnWidth="6" CellTitle="Agent">
+            <div class="row">
+                <div class="col-6">
+                    <h6>Name</h6>
+                    <p>@AgentConfiguration.AgentName</p>
+                    <h6>Buffer size</h6>
+                    <p>@AgentConfiguration.MemoryBuferSize</p>
+                    <h6>Batch size</h6>
+                    <p>@AgentConfiguration.BatchSize</p>
+                    <h6>Step count</h6>
+                    <p>@AgentConfiguration.MemorySteps</p>                    
+                </div>
+                <div class="col-6">
+                    <h6>Discount</h6>
+                    <p>@AgentConfiguration.Discount</p>
+                    <h6>Initial epsilon</h6>
+                    <p>@AgentConfiguration.InitialEpsilon</p>
+                    <h6>Minimum epsilon</h6>
+                    <p>@AgentConfiguration.MinimumEpsilon</p>
+                    <h6>Epsilon decay</h6>
+                    <p>@AgentConfiguration.EpsilonDecay</p>
+                </div>
+            </div>                     
+        </ContentCell>       
+    </CellPage>
+</div>
+
+@code
+{
+    [Parameter]
+    public NeuralConfiguration NeuralConfiguration { get; set; }
+
+    [Parameter]
+    public LearningAgentConfiguration AgentConfiguration { get; set; }
+
+    [Parameter]
+    public BrokerConfiguration BrokerConfiguration { get; set; }
+}

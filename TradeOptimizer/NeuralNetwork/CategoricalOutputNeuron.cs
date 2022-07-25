@@ -9,7 +9,7 @@ namespace AlgoTrading.Neural
     {
         public SoftMaxNode RelatedSoftMaxOutput { get; set; }
 
-        public CategoricalOutputNeuron(int layer, string name) : base(layer, name, NeuralSettings.ActivationType.Linear)
+        public CategoricalOutputNeuron(int layer, string name) : base(layer, name, NeuralConfiguration.ActivationType.Linear)
         {
         }
 

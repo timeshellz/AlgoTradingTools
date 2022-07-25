@@ -13,9 +13,9 @@ namespace AlgoTrading.Neural
         public double Delta { get; set; }
         public double WeightedInputSum { get; set; }
         public double InnerActivationDerivative { get; set; }
-        public NeuralSettings.ActivationType Activation { get; set; }
+        public NeuralConfiguration.ActivationType Activation { get; set; }
 
-        public Neuron(int layer, NeuralSettings.ActivationType activationType) : base(layer)
+        public Neuron(int layer, NeuralConfiguration.ActivationType activationType) : base(layer)
         {
             Layer = layer;
             Activation = activationType;
@@ -37,13 +37,13 @@ namespace AlgoTrading.Neural
         {
             WeightedInputSum = GetWeightedInputSum();
 
-            if(Activation == NeuralSettings.ActivationType.Gelu)
+            if(Activation == NeuralConfiguration.ActivationType.Gelu)
             {
                 Value = NeuralMath.GELU(WeightedInputSum);
                 //InnerActivationDerivative = Differentiate.FirstPartialDerivative(NeuralMath.GELU, new double[] { Value }, 0);
                 InnerActivationDerivative = NeuralMath.GELUDerivative(WeightedInputSum);
             }
-            else if(Activation == NeuralSettings.ActivationType.Linear)
+            else if(Activation == NeuralConfiguration.ActivationType.Linear)
             {
                 Value = WeightedInputSum;
                 InnerActivationDerivative = 1;

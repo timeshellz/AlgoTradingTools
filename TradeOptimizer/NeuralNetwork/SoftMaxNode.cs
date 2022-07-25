@@ -12,14 +12,14 @@ namespace AlgoTrading.Neural
         public double Delta { get; set; }
         public double WeightedInputSum { get; set; }
         public double InnerActivationDerivative { get; set; }
-        public NeuralSettings.ActivationType Activation { get; set; }
+        public NeuralConfiguration.ActivationType Activation { get; set; }
 
         public SoftMaxNode(CategoricalOutputNeuron relatedNeuron) : base(relatedNeuron.Layer + 1)
         {
             Name = relatedNeuron.Name;
             RelatedNeuron = relatedNeuron;
             relatedNeuron.RelatedSoftMaxOutput = this;
-            Activation = NeuralSettings.ActivationType.SoftMax;
+            Activation = NeuralConfiguration.ActivationType.SoftMax;
         }
 
         public void Activate(double maxValue, double exponentSum)

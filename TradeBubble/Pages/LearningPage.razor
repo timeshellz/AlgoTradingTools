@@ -1,0 +1,305 @@
+﻿@page "/Learning"
+@using TradeBubble.Components.Containers
+@using TradeBubble.Components.Layouts
+@using TradeBubble.Components.Forms;
+@using TradeBubble.Components.Info;
+@using Syncfusion.Blazor.Charts;
+@using System.Dynamic;
+
+@using TradeBubble.ViewModels
+
+@using AlgoTrading.Stocks;
+@using AlgoTrading.Broker;
+@using AlgoTrading.DQN; 
+
+@using Syncfusion.Blazor.Popups;
+
+@inject LearningPageViewModel viewModel
+@inject NavigationManager navigation
+
+<CellPage PageTitle="Learning Dashboard">
+    <ContentCell ColumnWidth="2" CellTitle="Controls">
+        @if (!viewModel.IsConfigured)
+        {
+            <button class="btn btn-secondary w-100 mb-1" @onclick="@(() => viewModel.IsCreatingDQN = true)">
+                Create
+            </button>
+            <button class="btn btn-secondary w-100 mb-1">
+                Load
+            </button>
+            <span class="border-bottom mb-1"></span>
+            <button class="btn btn-secondary w-100 mb-1" @onclick="@(() => navigation.NavigateTo("/StockManagement"))">
+                Manage Stock Data
+            </button>
+        }
+        else
+        {
+            @if (!viewModel.IsLearningRunning)
+            {
+                <button class="btn btn-secondary w-100 mb-1" @onclick="viewModel.SetPause">
+                    Resume
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-secondary w-100 mb-1" @onclick="viewModel.SetPause">
+                    Pause
+                </button>
+            }
+            <button class="btn btn-secondary w-100 mb-1">
+                Abort
+            </button>
+        }
+    </ContentCell>
+    <ContentCell ColumnWidth="3" CellTitle="Status">
+        @if (!viewModel.IsLearningRunning)
+        {
+            <p>Director not running.</p>
+        }
+        else
+        {
+            <p>Running...</p>
+        }
+    </ContentCell>
+    <ContentCell ColumnWidth="7" CellTitle="Configuration">
+        @if (viewModel.AgentConfiguration != null && viewModel.BrokerConfiguration != null && viewModel.NeuralConfiguration != null)
+        {
+            <LearningConfigurationDisplayInfo AgentConfiguration="viewModel.AgentConfiguration"
+                                              BrokerConfiguration="viewModel.BrokerConfiguration"
+                                              NeuralConfiguration="viewModel.NeuralConfiguration" />
+        }
+        else
+        {
+            <p>Not configured.</p>
+        }
+    </ContentCell>
+    @if (viewModel.IsConfigured)
+    {
+        <ContentCell ColumnWidth="12" CellTitle="Best Trade Run">
+            <div style="height: 800px;">
+                @if (viewModel.BestTradedStock != null)
+                {
+                <SfStockChart Title="@(viewModel.BestTradedStock.StockData.Identifier.Name)" Height="800px">
+                    <StockChartTooltipSettings Enable="true">
+                    </StockChartTooltipSettings>
+                    <StockChartSeriesCollection>
+                        <StockChartSeries DataSource="viewModel.BestTradedStock.StockData.Bars.Values.ToList()"
+                                          XName="@nameof(StockBar.Date)"
+                                          YName="@nameof(StockBar.Close)"
+                                          High="@nameof(StockBar.High)"
+                                          Low="@nameof(StockBar.Low)"
+                                          Volume="@nameof(StockBar.Volume)"
+                                          Open="@nameof(StockBar.Open)"
+                                          Close="@nameof(StockBar.Close)" EnableSolidCandles="true" Type="ChartSeriesType.Candle">
+                        </StockChartSeries>
+                    </StockChartSeriesCollection>
+                    <StockChartStockEvents>
+                        @foreach (MarketPosition marketPosition in viewModel.BestTradedStock.Positions ?? new List<MarketPosition>())
+                        {
+                            @if (marketPosition is ClosedPosition closedPosition)
+                            {
+                                DateTime openDate = closedPosition.StartBar.Date;
+                                DateTime closeDate = closedPosition.EndBar.Date;
+
+                                <StockChartStockEvent Date=@openDate
+                                                      Type=FlagType.Square
+                                                      Text="@($"O { closedPosition.Size }")"
+                                                      Description="@($"{closedPosition.OpeningValue}")"
+                                                      PlaceAt="Close"
+                                                      Background=#009900
+                                                      ShowOnSeries=true>
+                                </StockChartStockEvent>
+                                <StockChartStockEvent Date=@closeDate
+                                                      Type=FlagType.Square
+                                                      Text="C"
+                                                      Description="@($"{closedPosition.CloseValue}")"
+                                                      Background=#990000
+                                                      PlaceAt="Close"
+                                                      ShowOnSeries=true>
+                                </StockChartStockEvent>
+                            }
+                        }
+                    </StockChartStockEvents>
+                </SfStockChart>
+                }
+                else
+                {
+                    <p>Not available</p>
+                }
+            </div>            
+        </ContentCell>
+        <ContentCell ColumnWidth="12">
+            <SfChart Title="Total Reward">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Values" 
+                                 XName="@nameof(EpochStatistics.EpochID)" 
+                                 YName="@nameof(EpochStatistics.TotalIterationReward)" 
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Values"
+                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 YName="@nameof(EpochStatistics.TotalIterationReward)"
+                                 Type="ChartSeriesType.Line" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="6">
+            <SfChart Title="Average Loss">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
+                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 YName="@nameof(EpochStatistics.AverageLoss)"
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="6">
+            <SfChart Title="Epsilon">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
+                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 YName="@nameof(EpochStatistics.FinalEpsilon)"
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Average Trade Duration">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeDuration.TotalHours;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Scatter" Fill="#0000BB">
+                    </ChartSeries>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeDuration.TotalHours;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Scatter" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Average Trade Profit">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeProfit;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeProfit;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Number of Trades">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.TotalTrades;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.TotalTrades;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+    }
+</CellPage>
+
+<SfDialog Height="95vh" Width="80%" Header="DQN Setup" Visible="viewModel.IsCreatingDQN" IsModal="true" MinHeight="95vh">
+    @if (viewModel.CurrentSetupState == LearningPageViewModel.SetupState.CreateNew)
+    {
+        <DQNSettingsEditForm AgentSettings="viewModel.AgentConfiguration"
+                             BrokerSettings="viewModel.BrokerConfiguration"
+                             NeuralSettings="viewModel.NeuralConfiguration" />
+    }
+
+    @if (viewModel.CurrentSetupState == LearningPageViewModel.SetupState.SelectStocks)
+    {
+        <SelectStocksForm @ref="form"
+                          AvailableStocks=@viewModel.DisplayedStocks
+                          SelectedStocks="@viewModel.SelectedStocks" />
+    }
+    <DialogButtons>
+        <DialogButton Content="Confirm" OnClick="@(() => viewModel.AdvanceSetup())" />
+        <DialogButton Content="Cancel" OnClick="@(() => viewModel.BacktrackSetup())" />
+    </DialogButtons>
+</SfDialog>
+
+@code
+{
+    private List<IntervalStockIdentifier> displayedAvailableStocks = new List<IntervalStockIdentifier>();
+    private SelectStocksForm form;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitializeAsync();
+
+        viewModel.PropertyChanged += async (sender, e) =>
+        {
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        };
+    }
+}

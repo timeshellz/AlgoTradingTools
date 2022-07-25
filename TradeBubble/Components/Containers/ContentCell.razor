@@ -1,0 +1,51 @@
+﻿@using Layouts;
+@implements IDisposable
+
+<div class="col @GetColWidthClass(ColumnWidth) p-1">
+    <div class="p-2 shadow-sm border rounded-10 bg-white h-100">
+        @if(CellTitle != "")
+        {
+            <h5 class="border-bottom pb-1 mb-2">@CellTitle</h5>
+        }
+        @ChildContent
+    </div>
+</div>
+
+@code
+{
+    private string colWidthClass = "1";
+
+    [Parameter]
+    public int ColumnWidth { get; set; }
+
+    [Parameter]
+    public string CellTitle { get; set; } = "";
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [CascadingParameter(Name = "ParentComponent")]
+    CellPage CellPage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CellPage.Cells.Add(this);
+    }
+
+    public void Dispose()
+    {
+        CellPage.Cells.Remove(this);
+    }
+
+    private string GetColWidthClass(int width)
+    {
+        width = Math.Min(Math.Max(1, width), 12);
+
+        return "col-" + width;
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}

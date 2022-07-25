@@ -41,7 +41,7 @@ namespace AlgoTrading.SimulatedBroker
         {
             TrackedStockID = 0;
             StockDataController = new StockDataController();
-            StockDataController.LoadSavedStockData(settings.StockMetas);
+            //StockDataController.LoadSavedStockData(settings.StockNames);
             TrackedStock = StockDataController.Stocks.Values.First().First();
             LoadedStocks = StockDataController.Stocks;
             Settings = settings;
@@ -64,7 +64,7 @@ namespace AlgoTrading.SimulatedBroker
 
                 foreach(StockData stock in stockDatas)
                 {
-                    stock.Bars = stock.Bars.Where(e => e.Key < minLength).ToDictionary(s => s.Key, s => s.Value);
+                    //stock.Bars = stock.Bars.Where(e => e.Key < minLength).ToDictionary(s => s.Key, s => s.Value);
 
                     stock.TotalBars = stock.Bars.Count;
                 }
@@ -95,9 +95,9 @@ namespace AlgoTrading.SimulatedBroker
 
         void SetBeginning()
         {            
-            CurrentBarPos = TrackedStock.TotalBars - MinimumIndicatorTime + 1;
-            CurrentBar = TrackedStock.Bars[CurrentBarPos];
-            PreviousBar = TrackedStock.Bars[CurrentBarPos - 1];
+            //CurrentBarPos = TrackedStock.TotalBars - MinimumIndicatorTime + 1;
+            //CurrentBar = TrackedStock.Bars[CurrentBarPos];
+            //PreviousBar = TrackedStock.Bars[CurrentBarPos - 1];
         }
 
         public void AdvanceTime()
@@ -133,7 +133,7 @@ namespace AlgoTrading.SimulatedBroker
                 {
                     Position newPosition = new Position();
 
-                    CashChange = newPosition.Enter(TrackedStock.Name, amount, PreviousBar, Settings.Commission);
+                    //CashChange = newPosition.Enter(TrackedStock.Name, amount, PreviousBar, Settings.Commission);
                     Cash -= CashChange;
                     CurrentPosition = newPosition;
 
@@ -182,9 +182,9 @@ namespace AlgoTrading.SimulatedBroker
 
         bool CanSell()
         {
-            if (CurrentPosition != null && !CurrentPosition.IsComplete && TrackedStock.Name == CurrentPosition.StockName)
-                return true;
-            else
+            //if (CurrentPosition != null && !CurrentPosition.IsComplete && TrackedStock.Name == CurrentPosition.StockName)
+            //    return true;
+            //else
                 return false;
         }
 
@@ -282,12 +282,12 @@ namespace AlgoTrading.SimulatedBroker
 
         void UpdatePosition()
         {
-            CurrentBar = TrackedStock.Bars[CurrentBarPos];
+            //CurrentBar = TrackedStock.Bars[CurrentBarPos];
 
-            if(CurrentBarPos != 0)
-            {
-                PreviousBar = TrackedStock.Bars[CurrentBarPos - 1];
-            }         
+            //if(CurrentBarPos != 0)
+            //{
+            //    PreviousBar = TrackedStock.Bars[CurrentBarPos - 1];
+            //}         
         }
 
         bool IsPurchasePossible(int amount)
@@ -411,17 +411,12 @@ namespace AlgoTrading.SimulatedBroker
     public class BrokerSettings
     {
         [JsonProperty]
-        public List<string> StockMetas { get; set; } = new List<string>();
+        public List<StockIdentifier> StockNames { get; set; } = new List<StockIdentifier>();
         [JsonProperty]
-        public decimal StartCapital { get; private set; }
+        public decimal StartCapital { get; set; } = 600;
         [JsonProperty]
-        public decimal Commission { get; private set; }
+        public decimal Commission { get; set; } = 0.0003M;
 
-        public BrokerSettings(List<string> stockMetas, decimal capital, decimal commission)
-        {
-            StockMetas = stockMetas;
-            StartCapital = capital;
-            Commission = commission;
-        }
+        public BrokerSettings() { }
     }
 }

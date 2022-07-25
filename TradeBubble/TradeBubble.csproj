@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+    <PackageReference Include="Syncfusion.Blazor" Version="20.1.0.50" />
+    <PackageReference Include="Tinkoff.InvestApi" Version="0.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Broker.Simulated\AlgoTrading.Broker.Simulated.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Stocks.Persistence.Database\AlgoTrading.Stocks.Persistence.Database.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Stocks.Persistence\AlgoTrading.Stocks.Persistence.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Stocks.Tinkoff\AlgoTrading.Stocks.Tinkoff.csproj" />
+    <ProjectReference Include="..\DQN\AlgoTrading.DQN.csproj" />
+    <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
+    <ProjectReference Include="..\TradeOptimizer\DataKeeping\AlgoTrading.DataKeeping.csproj" />
+    <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
+  </ItemGroup>
+
+</Project>

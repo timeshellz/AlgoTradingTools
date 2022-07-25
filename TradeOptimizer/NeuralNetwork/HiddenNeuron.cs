@@ -7,7 +7,7 @@ namespace AlgoTrading.Neural
 {
     class HiddenNeuron : Neuron
     {
-        public HiddenNeuron(int layer) : base(layer, NeuralSettings.ActivationType.Gelu)
+        public HiddenNeuron(int layer) : base(layer, NeuralConfiguration.ActivationType.Gelu)
         {
             
         }

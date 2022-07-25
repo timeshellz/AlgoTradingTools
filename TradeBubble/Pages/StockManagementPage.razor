@@ -1,0 +1,216 @@
+﻿@page "/StockManagement"
+@using AlgoTrading.Stocks; 
+@using System.Linq;
+
+@using TradeBubble.Components.Containers
+@using TradeBubble.Components.Layouts
+@using TradeBubble.Components.Forms;
+
+@using TradeBubble.ViewModels
+
+@using Syncfusion.Blazor.Popups;
+@using Syncfusion.Blazor.Grids; 
+@using Syncfusion.Blazor.Navigations; 
+@using Syncfusion.Blazor.Spinner; 
+@using Syncfusion.Blazor.DropDowns;
+@using Syncfusion.Blazor.Charts; 
+
+@inject StockManagementViewModel viewModel
+
+<CellPage PageTitle="Stock Data Management">
+    <ContentCell ColumnWidth="6">
+        <SfTab>
+            @if (viewModel.AvailableStocks.Count == 0)
+            {
+                <SfSpinner Label="Loading" Visible="true" />
+            }
+            <TabAnimationSettings>
+                <TabAnimationPrevious Effect="Syncfusion.Blazor.AnimationEffect.None"></TabAnimationPrevious>
+                <TabAnimationNext Effect="Syncfusion.Blazor.AnimationEffect.None"></TabAnimationNext>
+            </TabAnimationSettings>
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Available Stocks" />
+                    </ChildContent>
+                    <ContentTemplate>
+                        <SfDropDownList DataSource="@viewModel.AvailableIntervals"
+                                        Placeholder="Candle Interval"
+                                        TItem="DataInterval" TValue="DataInterval"
+                                        @bind-Value="@viewModel.SelectedInterval" />
+                        <SfGrid @ref="availableStocks" DataSource="@viewModel.AvailableStocks.Values.ToList()" TValue="StockIdentifier"
+                                AllowPaging="true" AllowFiltering="true" AllowSorting="true">
+                            <GridPageSettings PageSize="10" PageCount="3" />
+                            <GridColumns>
+                                <GridColumn Field="@nameof(StockIdentifier.Name)" HeaderText="Name" IsPrimaryKey="true" />
+                                <GridColumn Field="@nameof(StockIdentifier.FIGI)" HeaderText="FIGI" />
+                                <GridColumn Field="@nameof(StockIdentifier.Sector)" HeaderText="Sector" />
+                                <GridColumn Field="@nameof(StockIdentifier.Currency)" HeaderText="Currency" />
+                            </GridColumns>
+                            <GridEvents TValue="StockIdentifier" OnRecordDoubleClick="OnAvailableRowDoubleClick"></GridEvents>
+                            <GridSortSettings>
+                                <GridSortColumns>
+                                    <GridSortColumn Field="@nameof(StockIdentifier.Name)" Direction="SortDirection.Ascending" />
+                                </GridSortColumns>
+                            </GridSortSettings>
+                        </SfGrid>
+                        <button class="btn btn-secondary w-100 mt-1 mb-1" @onclick="@(async() => await OnSelectFilteredStocks())">Select Filtered</button>
+                        <button class="btn btn-secondary w-100 mb-1" @onclick="@(() => viewModel.SelectAllStocks())">Select All</button>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Downloaded Stocks" />
+                    </ChildContent>
+                    <ContentTemplate>
+                        <SfDropDownList DataSource="@viewModel.AvailableIntervals"
+                                        Placeholder="Candle Interval"
+                                        TItem="DataInterval" TValue="DataInterval"
+                                        @bind-Value="@viewModel.SelectedInterval" />
+                        <SfGrid @ref="downloadedStocks" DataSource="@viewModel.SavedStocks.Values.ToList()" TValue="StockIdentifier"
+                                AllowPaging="true" AllowFiltering="true" AllowSorting="true">
+                            <GridPageSettings PageSize="10" PageCount="3" />
+                            <GridColumns>
+                                <GridColumn Field="@nameof(StockIdentifier.Name)" HeaderText="Name" IsPrimaryKey="true" />
+                                <GridColumn Field="@nameof(StockIdentifier.FIGI)" HeaderText="FIGI" />
+                                <GridColumn Field="@nameof(StockIdentifier.Sector)" HeaderText="Sector" />
+                                <GridColumn Field="@nameof(StockIdentifier.Currency)" HeaderText="Currency" />
+                            </GridColumns>
+                            <GridEvents TValue="StockIdentifier" OnRecordDoubleClick="OnDownloadedStockRowDoubleClick"></GridEvents>
+                            <GridSortSettings>
+                                <GridSortColumns>
+                                    <GridSortColumn Field="@nameof(StockIdentifier.Name)" Direction="SortDirection.Ascending" />
+                                </GridSortColumns>
+                            </GridSortSettings>
+                        </SfGrid>
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+        </SfTab>
+    </ContentCell>
+    <ContentCell ColumnWidth="3" CellTitle="Selected Stocks">
+        <SfGrid @ref="selectedStocks" DataSource="@viewModel.SelectedStocks.Values.ToList()" TValue="StockIdentifier"
+                AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+            <GridPageSettings PageSize="8" PageCount="3" />
+            <GridColumns>
+                <GridColumn Field="@nameof(StockIdentifier.Name)" HeaderText="Name" IsPrimaryKey="true" />
+                <GridColumn Field="@nameof(StockIdentifier.FIGI)" HeaderText="FIGI" />
+            </GridColumns>
+            <GridEvents TValue="StockIdentifier" OnRecordDoubleClick="OnSelectedStockRowDoubleClick"></GridEvents>
+            <GridSortSettings>
+                <GridSortColumns>
+                    <GridSortColumn Field="@nameof(StockIdentifier.Name)" Direction="SortDirection.Ascending" />
+                </GridSortColumns>
+            </GridSortSettings>
+        </SfGrid>
+        <button class="btn btn-secondary w-100 mt-1 mb-1" @onclick="@(async() => viewModel.DownloadSelectedStocks())">Download Selected</button>
+        <button class="btn btn-secondary w-100 mb-1" @onclick="@(async() => await OnDeselectFilteredStocks())">Deselect Filtered</button>
+        <button class="btn btn-secondary w-100 mb-1" @onclick="@(() => viewModel.DeselectAllStocks())">Deselect All</button>
+    </ContentCell>
+    <ContentCell @ref="downloadStatus" ColumnWidth="3" CellTitle="Download Status">
+        <div>
+            @if (viewModel.RemainingDownloads == 0)
+            {
+                <h6>Idle</h6>
+            }
+            else
+            {
+                <SfSpinner Label="Downloading" Visible="true" />
+                <h6>@viewModel.RemainingDownloads remaining.</h6>
+            }
+        </div>       
+    </ContentCell>
+</CellPage>
+
+<SfDialog Visible="@viewModel.IsDisplayingStockData" Height="90%" MinHeight="90%" Width="90%" IsModal="true">
+    <DialogTemplates>
+        <Content>
+            @if (viewModel.DisplayedStockData != null)
+            {
+            <SfStockChart Title="@(viewModel.DisplayedStockData.Identifier.Name)" Height="550px">
+                <StockChartSeriesCollection>
+                    <StockChartSeries DataSource="viewModel.DisplayedStockData.Bars.Values.ToList()"
+                                      XName="@nameof(StockBar.Date)"
+                                      YName="@nameof(StockBar.Close)"
+                                      High="@nameof(StockBar.High)"
+                                      Low="@nameof(StockBar.Low)"
+                                      Volume="@nameof(StockBar.Volume)"
+                                      Open="@nameof(StockBar.Open)"
+                                      Close="@nameof(StockBar.Close)" EnableSolidCandles="true">
+                    </StockChartSeries>
+                </StockChartSeriesCollection>
+            </SfStockChart>              
+            }
+            else
+            {
+                <SfSpinner Label="Loading" Visible="true"/>
+            }
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@(() => viewModel.CloseDisplayedStock())" Content="Close"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@code {
+    private SfGrid<StockIdentifier> availableStocks;
+    private SfGrid<StockIdentifier> selectedStocks;
+    private SfGrid<StockIdentifier> downloadedStocks;
+
+    private ContentCell downloadStatus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await viewModel.InitializeAsync();
+
+        viewModel.PropertyChanged += async (sender, e) =>
+        {
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        };
+
+        StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        downloadStatus.Refresh();
+    }
+
+    public void OnAvailableRowDoubleClick(RecordDoubleClickEventArgs<StockIdentifier> args)
+    {
+        viewModel.SelectStock(args.RowData);
+    }
+
+    public void OnSelectedStockRowDoubleClick(RecordDoubleClickEventArgs<StockIdentifier> args)
+    {
+        viewModel.DeselectStock(args.RowData);
+    }
+
+    public void OnDownloadedStockRowDoubleClick(RecordDoubleClickEventArgs<StockIdentifier> args)
+    {
+        viewModel.DisplayStock(args.RowData);
+    }
+
+    public async Task OnSelectFilteredStocks()
+    {
+        var filteredStocks = await availableStocks.GetFilteredRecordsAsync();
+
+        foreach (var stock in (List<StockIdentifier>)filteredStocks)
+        {
+            viewModel.SelectStock(stock);
+        }
+    }
+
+    public async Task OnDeselectFilteredStocks()
+    {
+        var filteredStocks = await selectedStocks.GetFilteredRecordsAsync();
+
+        foreach (var stock in (List<StockIdentifier>)filteredStocks)
+        {
+            viewModel.DeselectStock(stock);
+        }
+    }
+}

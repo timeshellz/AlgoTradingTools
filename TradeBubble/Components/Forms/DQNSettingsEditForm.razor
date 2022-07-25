@@ -1,0 +1,52 @@
+﻿@using TradeBubble.Components.Containers
+@using TradeBubble.Components.Layouts
+@using AlgoTrading.Neural;
+@using AlgoTrading.Agent.Learning;
+@using AlgoTrading.Broker;
+
+@using Syncfusion.Blazor.Inputs;
+
+<CellPage>
+    <ContentCell ColumnWidth="4" CellTitle="Emulated Broker">
+        <SfNumericTextBox TValue="decimal" Placeholder="Initial Capital" @bind-Value="BrokerSettings.StartCapital"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="decimal" Placeholder="Commission" @bind-Value="BrokerSettings.Commission"
+                          FloatLabelType="FloatLabelType.Auto" Min="0" Max="1" />
+    </ContentCell>
+    <ContentCell ColumnWidth="4" CellTitle="Neural Network">
+        <SfTextBox Placeholder="Name" FloatLabelType="FloatLabelType.Always" @bind-Value="NeuralSettings.NetworkName" />
+        <SfNumericTextBox TValue="@int" Min="1" Placeholder="Hidden Layers" @bind-Value="NeuralSettings.HiddenLayerCount"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@double" Max="1" Min="0" Placeholder="Learning Rate" @bind-Value="NeuralSettings.LearningRate"
+                          FloatLabelType="FloatLabelType.Auto" />
+    </ContentCell>
+    <ContentCell ColumnWidth="4" CellTitle="Agent">
+        <SfTextBox Placeholder="Name" FloatLabelType="FloatLabelType.Always" @bind-Value="AgentSettings.AgentName" />
+        <SfNumericTextBox TValue="@int" Min="0" Placeholder="Buffer Size" @bind-Value="AgentSettings.MemoryBuferSize"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@int" Min="0" Placeholder="Batch Size" @bind-Value="AgentSettings.BatchSize"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@int" Min="0" Placeholder="Step Count" @bind-Value="AgentSettings.MemorySteps"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@double" Min="0" Max="1" Placeholder="Discount" @bind-Value="AgentSettings.Discount"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@double" Min="0" Max="1" Placeholder="Epsilon" @bind-Value="AgentSettings.InitialEpsilon"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@double" Min="0" Max="1" Placeholder="Epsilon Decay" @bind-Value="AgentSettings.EpsilonDecay"
+                          FloatLabelType="FloatLabelType.Auto" />
+        <SfNumericTextBox TValue="@double" Min="0" Max="1" Placeholder="Minimum Epsilon" @bind-Value="AgentSettings.MinimumEpsilon"
+                          FloatLabelType="FloatLabelType.Auto" />
+    </ContentCell>
+</CellPage>
+
+@code
+{
+    [Parameter]
+    public NeuralConfiguration NeuralSettings { get; set; }
+
+    [Parameter]
+    public LearningAgentConfiguration AgentSettings { get; set; }
+
+    [Parameter]
+    public BrokerConfiguration BrokerSettings { get; set; }
+}

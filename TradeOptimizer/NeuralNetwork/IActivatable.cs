@@ -9,6 +9,6 @@ namespace AlgoTrading.Neural
         double Delta { get; set; }
         double WeightedInputSum { get; set; }
         double InnerActivationDerivative { get; set; }
-        NeuralSettings.ActivationType Activation { get; set; }
+        NeuralConfiguration.ActivationType Activation { get; set; }
     }
 }

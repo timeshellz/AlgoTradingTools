@@ -6,7 +6,7 @@ namespace AlgoTrading.Neural
 {
     public class CrossEntropyBackpropagationSpecification : IBackpropagationSpecification
     {
-        public NeuralSettings.PredictionMechanism PredictionType { get; set; } = NeuralSettings.PredictionMechanism.CategoricalCrossEntropy;
+        public NeuralConfiguration.PredictionMechanism PredictionType { get; set; } = NeuralConfiguration.PredictionMechanism.CategoricalCrossEntropy;
         public string TargetName { get; set; }
         public Dictionary<int, double> TargetValues { get; set; }
         public Dictionary<int, double> EstimatedTargetValueProbabilities { get; set; }

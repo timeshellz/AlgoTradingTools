@@ -6,7 +6,7 @@ namespace AlgoTrading.Neural
 {
     class NonCategoricalOutputNeuron : OutputNeuron
     {
-        public NonCategoricalOutputNeuron(int layer, string name) : base(layer, name, NeuralSettings.ActivationType.Gelu)
+        public NonCategoricalOutputNeuron(int layer, string name) : base(layer, name, NeuralConfiguration.ActivationType.Gelu)
         {
         }
 

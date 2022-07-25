@@ -29,7 +29,7 @@ namespace AlgoTrading.DQN.UserInterface
 
         public DQNMeta DQNMeta { get; private set; }
         public DQNMetaFileManager MetaSaveManager { get; private set; }
-        public PrimaryDQNController DQNController { get; private set; }
+        public DQNController DQNController { get; private set; }
 
         Thread ControllerThread;
 
@@ -69,7 +69,7 @@ namespace AlgoTrading.DQN.UserInterface
 
         void InitializeDQNController()
         {
-            DQNController = new PrimaryDQNController(DQNMeta);
+            DQNController = new DQNController(DQNMeta);
 
             StartDQNThread();
         }
@@ -104,8 +104,7 @@ namespace AlgoTrading.DQN.UserInterface
 
         void CreateDQNMeta()
         {
-            DQNMeta = new DQNMeta(NeuralSettings.NetworkName, NeuralSaveManager.FileName,
-                AgentSaveManager.FileName, AgentSettings, NeuralSettings, BrokerSettings);
+            DQNMeta = new DQNMeta(AgentSettings, NeuralSettings, BrokerSettings);
 
             MetaSaveManager = new DQNMetaFileManager(DQNMeta);
         }
@@ -120,7 +119,7 @@ namespace AlgoTrading.DQN.UserInterface
             BrokerSettings = dQNMeta.BrokerSettings;
             NeuralSettings = dQNMeta.NeuralSettings;
             AgentSettings = dQNMeta.AgentSettings;
-            LoadedStocksStrings = BrokerSettings.StockMetas;
+            //LoadedStocksStrings = BrokerSettings.StockFIGIs;
             
             SettingsReady.Invoke(this, new EventArgs());
             StocksReady.Invoke(this, new EventArgs());
@@ -143,8 +142,6 @@ namespace AlgoTrading.DQN.UserInterface
         {
             NeuralSaveManager = new NeuralNetworkFileManager(NeuralSettings.NetworkName);
             AgentSaveManager = new AgentFileManager(AgentSettings.AgentName);
-        }
-
-        
+        }      
     }
 }

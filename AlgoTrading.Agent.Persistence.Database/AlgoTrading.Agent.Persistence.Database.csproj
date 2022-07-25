@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Agent.Persistence\AlgoTrading.Agent.Persistence.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Agent\AlgoTrading.Agent.csproj" />
+  </ItemGroup>
+
+</Project>

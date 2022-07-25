@@ -1,0 +1,25 @@
+﻿@using Syncfusion.Blazor.Navigations; 
+
+<SfMenu TValue="MenuItem" CssClass="z-index-top">
+    <MenuItems>
+        <MenuItem Text="Home" Url="/">
+        </MenuItem>
+        <MenuItem Text="Learning" Url="/Learning">
+            <MenuItems>
+                <MenuItem Text="Stocks" Url="/StockManagement"></MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem Text="Trading" Url="/Trading">
+        </MenuItem>
+    </MenuItems>
+</SfMenu>
+
+<style>
+    .z-index-top {
+        z-index: 10000;
+    }
+
+    .e-menu-container.e-menu-popup{
+        z-index: 9999;
+    }
+</style>

@@ -1,18 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cyotek.CircularBuffer" Version="1.1.0" />
+    <PackageReference Include="Cyotek.CircularBuffer" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BrokerEmulator\AlgoTrading.SimulatedBroker.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Agent.Learning\AlgoTrading.Agent.Learning.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Agent.Persistence\AlgoTrading.Agent.Persistence.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Agent\AlgoTrading.Agent.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Broker.Simulated\AlgoTrading.Broker.Simulated.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
     <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
     <ProjectReference Include="..\TradeOptimizer\DataKeeping\AlgoTrading.DataKeeping.csproj" />
     <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
+    <ProjectReference Include="..\Utilities\AlgoTrading.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,24 @@
+﻿@using TradeBubble.Components.Containers
+
+<CascadingValue Value="this" Name="ParentComponent">
+    <div class="row">
+        @if (PageTitle != "")
+        {
+            <ContentCell ColumnWidth="12">
+                <h3>@PageTitle</h3>
+            </ContentCell>
+        }
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code
+{
+    public List<ContentCell> Cells { get; } = new List<ContentCell>();
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string PageTitle { get; set; } = "";
+}

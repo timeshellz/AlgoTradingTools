@@ -7,6 +7,6 @@ namespace AlgoTrading.Neural
     public interface IBackpropagationSpecification
     {
         string TargetName { get; set; }
-        NeuralSettings.PredictionMechanism PredictionType { get; set; }
+        NeuralConfiguration.PredictionMechanism PredictionType { get; set; }
     }
 }

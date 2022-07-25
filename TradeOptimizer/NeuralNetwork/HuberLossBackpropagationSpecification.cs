@@ -6,7 +6,7 @@ namespace AlgoTrading.Neural
 {
     public class HuberLossBackpropagationSpecification : IBackpropagationSpecification
     {
-        public NeuralSettings.PredictionMechanism PredictionType { get; set; } = NeuralSettings.PredictionMechanism.NonCategorical;
+        public NeuralConfiguration.PredictionMechanism PredictionType { get; set; } = NeuralConfiguration.PredictionMechanism.NonCategorical;
         public string TargetName { get; set; }
         public double TargetValue { get; private set; }
 

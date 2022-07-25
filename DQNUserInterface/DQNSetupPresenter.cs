@@ -70,15 +70,15 @@ namespace AlgoTrading.DQN.UserInterface
 
         public void GenerateDQN()
         {
-            NeuralSettings neuralSettings = new NeuralSettings(NetworkName, BrokerEmulator.GetAllPossibleOutputs(), BrokerEmulator.GetAllPossibleActions(),
-                                            Convert.ToInt32(HiddenLayers), Convert.ToDouble(LearningRate));//, NeuralSettings.PredictionMechanism.CategoricalCrossEntropy, 51);
-            AgentSettings agentSettings = new AgentSettings(AgentName, Convert.ToInt32(BufferSize), Convert.ToInt32(BatchSize), Convert.ToDouble(Discount),
-                                            Convert.ToDouble(Epsilon), Convert.ToDouble(MinimumEpsilon), Convert.ToDouble(EpsilonDecay), Convert.ToInt32(StepCount),
-                                            Convert.ToDouble(Tau));
+            //NeuralSettings neuralSettings = new NeuralSettings(NetworkName, BrokerEmulator.GetAllPossibleOutputs(), BrokerEmulator.GetAllPossibleActions(),
+            //                                Convert.ToInt32(HiddenLayers), Convert.ToDouble(LearningRate));//, NeuralSettings.PredictionMechanism.CategoricalCrossEntropy, 51);
+            //AgentSettings agentSettings = new AgentSettings(AgentName, Convert.ToInt32(BufferSize), Convert.ToInt32(BatchSize), Convert.ToDouble(Discount),
+            //                                Convert.ToDouble(Epsilon), Convert.ToDouble(MinimumEpsilon), Convert.ToDouble(EpsilonDecay), Convert.ToInt32(StepCount),
+            //                                Convert.ToDouble(Tau));
                                             
-            BrokerSettings brokerSettings = new BrokerSettings(AddedStocks, Convert.ToDecimal(InitialCapital), Convert.ToDecimal(Commission));
+            //BrokerSettings brokerSettings = new BrokerSettings(AddedStocks, Convert.ToDecimal(InitialCapital), Convert.ToDecimal(Commission));
 
-            MainPresenter.SetupNewDQN(brokerSettings, neuralSettings, agentSettings);
+            //MainPresenter.SetupNewDQN(brokerSettings, neuralSettings, agentSettings);
         }
 
         public void ConfirmStockDataSelection()

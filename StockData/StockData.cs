@@ -9,140 +9,124 @@ using Skender.Stock.Indicators;
 
 namespace AlgoTrading.Stocks
 {
-    public enum DataInterval { FiveMinute, FifteenMinute, HalfHour, Hour, FourHour, Day, Week, Month, ThreeMonths }
-
+    
     public class StockData
     {             
-        public string Name { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }       
-        public DataInterval Interval { get; set; }
-        public Dictionary<int, StockBar> Bars { get; set; }
-        [JsonIgnore]
-        public Dictionary<string, IEnumerable<IResult>> Indicators { get; private set; }
-        public int TotalBars { get; set; }
+        public StockIdentifier Identifier { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }       
+        public DataInterval Interval { get; private set; }
+        public SortedList<DateTime, StockBar> Bars { get; private set; }
+        public SortedList<DateTime, IndicatorBar> Indicators { get; private set; }
 
-        string intervalString;
+        private StockData() { }
 
-        public StockData(string name, Dictionary<int, StockBar> bars, DataInterval interval)
+        public static StockDataBuilder GetBuilder()
         {
-            Name = name;                                
-            Bars = bars;
-            Interval = interval;
-            intervalString = StockDataController.ConvertIntervalToString(interval);
-            UpdateIndicators();
-            StartDate = Bars.First().Value.Date;
-            EndDate = Bars.Last().Value.Date;
-            TotalBars = Bars.Count;
+            return new StockDataBuilder(new StockData());
         }
 
-
-        
-        public void UpdateIndicators()
+        public void SetIndicators(IIndicatorProvider provider)
         {
-            Indicators = GetIndicators();
-        }
-
-        Dictionary<string, IEnumerable<IResult>> GetIndicators()
-        {
-            Dictionary<string, IEnumerable<IResult>> indicators = new Dictionary<string, IEnumerable<IResult>>();
-
-            IEnumerable<StochResult> stochResults = Bars.Values.GetStoch(5, 1, 3).Where(e => e.Oscillator != null && e.Signal != null);
-            IEnumerable<SmaResult> sma200Results = Bars.Values.GetSma(200).Where(e => e.Sma != null);
-            IEnumerable<SmaResult> sma50Results = Bars.Values.GetSma(50).Where(e => e.Sma != null);
-            IEnumerable<DemaResult> demaResults = Bars.Values.GetDoubleEma(20).Where(e => e.Dema != null);
-            IEnumerable<RocResult> demaRocResults = ConvertToQuotes(demaResults).GetRoc(4).Where(e => e.Roc != null);
-            IEnumerable<RocResult> rocResults = Bars.Values.GetRoc(4).Where(e => e.Roc != null);
-            IEnumerable<RocResult> longRocResults = Bars.Values.GetRoc(150).Where(e => e.Roc != null);
-            IEnumerable<MacdResult> macdResults = Bars.Values.GetMacd(5, 15, 2).Where(e => e.Macd != null && e.Signal != null && e.Histogram != null);
-            IEnumerable<BollingerBandsResult> bbResults = Bars.Values.GetBollingerBands().Where(e => e.LowerBand != null && e.UpperBand != null && e.Sma != null);
-            IEnumerable<BopResult> bopResults = Bars.Values.GetBop().Where(e => e.Bop != null);
-            IEnumerable<ObvResult> obvResults = Bars.Values.GetObv().Where(e => e.Obv != null);
-            IEnumerable<RocResult> obvRocResults = ConvertToQuotes(obvResults).GetRoc(20).Where(e => e.Roc != null);
-            IEnumerable<AdxResult> adxResults = Bars.Values.GetAdx(14).Where(e => e.Adx != null);
-            IEnumerable<AroonResult> aroonResults = Bars.Values.GetAroon(14).Where(e => e.AroonDown != null && e.AroonUp != null);
-
-            IEnumerable<RocResult> sma50Roc100Results = ConvertToQuotes(sma50Results).GetRoc(100);
-            IEnumerable<RocResult> roc100Roc100Results = ConvertToQuotes(sma50Roc100Results).GetRoc(100);
-            IEnumerable<RocResult> roc100Roc10Results = ConvertToQuotes(roc100Roc100Results).GetRoc(10).Where(e => e.Roc != null);
-
-            for(int i = 0; i < roc100Roc10Results.Count(); i++)
+            if (Bars != null && Bars.Count > 0)
             {
-                roc100Roc10Results.ElementAt(i).Roc /= 100;
+                var indicators = provider.GetIndicators(Bars.Values.ToList()).ToDictionary(k => k.Date);
+
+                if (indicators.All(b => Bars.ContainsKey(b.Key)))
+                {
+                    Indicators = new SortedList<DateTime, IndicatorBar>(indicators);
+
+                    TrimInvalidBars();
+                    return;
+                }
+                else
+                    throw new ArgumentException("Provided indicators don't fully match stock bars.");
+            }
+        }
+
+        private void TrimInvalidBars()
+        {
+            if (Indicators != null && Indicators.Count > 0)
+            {
+                var firstValidDate = Indicators.First(e => e.Value.IsValid()).Key;
+                var invalidDates = new List<DateTime>(Indicators.Where(e => e.Key < firstValidDate).Select(v => v.Key));
+
+                foreach (var invalidDate in invalidDates)
+                {
+                    Indicators.Remove(invalidDate);
+                    Bars.Remove(invalidDate);
+                }
+
+                StartDate = Bars.First().Key;
+                EndDate = Bars.Last().Key;
+            }
+        }
+
+        public class StockDataBuilder
+        {
+            private StockData stockData;
+
+            public StockDataBuilder(StockData stockData)
+            {
+                this.stockData = stockData;
+                this.stockData.Interval = DataInterval.Any;
             }
 
-            indicators.Add("Stochastic", stochResults);
-            indicators.Add("Sma200", sma200Results);
-            indicators.Add("Sma50", sma50Results);
-            indicators.Add("Dema", demaResults);
-            indicators.Add("DemaROC", demaRocResults);
-            indicators.Add("ROC", rocResults);
-            indicators.Add("LongROC", longRocResults);
-            indicators.Add("MACD", macdResults);
-            indicators.Add("BB", bbResults);
-            indicators.Add("OBV", obvResults);
-            indicators.Add("OBVROC", obvRocResults);
-            indicators.Add("ADX", adxResults);
-            indicators.Add("Aroon", aroonResults);
-            indicators.Add("DDD", roc100Roc10Results);
+            public StockData Build()
+            {
+                if (stockData.Identifier == null)
+                    throw new ArgumentNullException("Identifier not set.");
 
-            return indicators;
-        }
+                if(stockData.Interval == DataInterval.Any)
+                    throw new ArgumentNullException("Interval not set.");
 
-        List<Quote> ConvertToQuotes(IEnumerable<DemaResult> demaResults)
-        {
-            List<Quote> demaQuotes = demaResults
-                .Where(x => x.Dema != null)
-                .Select(x => new Quote
+                if(stockData.Bars == null)
+                    throw new ArgumentNullException("Bars not set.");
+
+                return stockData;
+            }           
+
+            public StockDataBuilder SetIdentifier(StockIdentifier identifier)
+            {
+                stockData.Identifier = identifier;
+
+                return this;
+            }
+
+            public StockDataBuilder SetInterval(DataInterval interval)
+            {
+                stockData.Interval = interval;
+
+                return this;
+            }
+
+            public StockDataBuilder SetBars(List<StockBar> bars)
+            {
+                SetBars(new SortedList<DateTime, StockBar>(bars.ToDictionary(k => k.Date)));
+
+                return this;
+            }
+
+            public StockDataBuilder SetBars(SortedList<DateTime, StockBar> bars)
+            {
+                if (bars != null && bars.Count > 0)
                 {
-                    Date = x.Date,
-                    Close = (decimal)x.Dema
-                })
-                .ToList();
+                    stockData.Bars = bars;
+                    stockData.StartDate = stockData.Bars.First().Key;
+                    stockData.EndDate = stockData.Bars.Last().Key;
+                }
+                else
+                    stockData.Bars = new SortedList<DateTime, StockBar>();
 
-            return demaQuotes;
+                return this;
+            }
+
+            public StockDataBuilder SetIndicators(IIndicatorProvider provider)
+            {
+                stockData.SetIndicators(provider);
+
+                return this;
+            }
         }
-
-        List<Quote> ConvertToQuotes(IEnumerable<RocResult> rocResults)
-        {
-            List<Quote> rocQuotes = rocResults
-                .Where(x => x.Roc != null)
-                .Select(x => new Quote
-                {
-                    Date = x.Date,
-                    Close = (decimal)x.Roc
-                })
-                .ToList();
-
-            return rocQuotes;
-        }
-
-        List<Quote> ConvertToQuotes(IEnumerable<ObvResult> obvResults)
-        {
-            List<Quote> obvQuotes = obvResults
-                .Where(x => x.Obv != null)
-                .Select(x => new Quote
-                {
-                    Date = x.Date,
-                    Close = (decimal)x.Obv
-                })
-                .ToList();
-
-            return obvQuotes;
-        }
-
-        List<Quote> ConvertToQuotes(IEnumerable<SmaResult> smaResults)
-        {
-            List<Quote> smaQuotes = smaResults
-                .Where(x => x.Sma != null)
-                .Select(x => new Quote
-                {
-                    Date = x.Date,
-                    Close = (decimal)x.Sma
-                })
-                .ToList();
-
-            return smaQuotes;
-        }        
     }
 }
