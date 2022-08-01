@@ -152,7 +152,7 @@ namespace TradeBubble.ViewModels
         public void DisplayStock(StockIdentifier stock)
         {
             IsDisplayingStockData = true;
-            StockDataService.GetSavedStockData(stock, SelectedInterval);
+            StockDataService.GetSavedStockData(new IntervalStockIdentifier(SelectedInterval, stock));
         }
 
         public void CloseDisplayedStock()

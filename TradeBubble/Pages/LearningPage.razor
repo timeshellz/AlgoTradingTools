@@ -75,67 +75,218 @@
     </ContentCell>
     @if (viewModel.IsConfigured)
     {
-        <ContentCell ColumnWidth="12" CellTitle="Best Trade Run">
-            <div style="height: 800px;">
-                @if (viewModel.BestTradedStock != null)
-                {
-                <SfStockChart Title="@(viewModel.BestTradedStock.StockData.Identifier.Name)" Height="800px">
-                    <StockChartTooltipSettings Enable="true">
-                    </StockChartTooltipSettings>
-                    <StockChartSeriesCollection>
-                        <StockChartSeries DataSource="viewModel.BestTradedStock.StockData.Bars.Values.ToList()"
-                                          XName="@nameof(StockBar.Date)"
-                                          YName="@nameof(StockBar.Close)"
-                                          High="@nameof(StockBar.High)"
-                                          Low="@nameof(StockBar.Low)"
-                                          Volume="@nameof(StockBar.Volume)"
-                                          Open="@nameof(StockBar.Open)"
-                                          Close="@nameof(StockBar.Close)" EnableSolidCandles="true" Type="ChartSeriesType.Candle">
-                        </StockChartSeries>
-                    </StockChartSeriesCollection>
-                    <StockChartStockEvents>
-                        @foreach (MarketPosition marketPosition in viewModel.BestTradedStock.Positions ?? new List<MarketPosition>())
-                        {
-                            @if (marketPosition is ClosedPosition closedPosition)
-                            {
-                                DateTime openDate = closedPosition.StartBar.Date;
-                                DateTime closeDate = closedPosition.EndBar.Date;
+        <ContentCell ColumnWidth="12" CellTitle="Record Best Trade Run Statistics">
+            @{
+                TradedStockStatistics bestTradedStock = null;
 
-                                <StockChartStockEvent Date=@openDate
-                                                      Type=FlagType.Square
-                                                      Text="@($"O { closedPosition.Size }")"
-                                                      Description="@($"{closedPosition.OpeningValue}")"
-                                                      PlaceAt="Close"
-                                                      Background=#009900
-                                                      ShowOnSeries=true>
-                                </StockChartStockEvent>
-                                <StockChartStockEvent Date=@closeDate
-                                                      Type=FlagType.Square
-                                                      Text="C"
-                                                      Description="@($"{closedPosition.CloseValue}")"
-                                                      Background=#990000
-                                                      PlaceAt="Close"
-                                                      ShowOnSeries=true>
-                                </StockChartStockEvent>
+                if (viewModel.BestEpoch != null)
+                    bestTradedStock = viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock;
+
+                if (bestTradedStock != null)
+                {
+                    ClosedPosition firstClosedPosition = (ClosedPosition)(viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock.Positions
+                            .Where(p => p is ClosedPosition).FirstOrDefault());
+
+                    ClosedPosition lastClosedPosition = (ClosedPosition)(viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock.Positions
+                        .Where(p => p is ClosedPosition).LastOrDefault());
+
+                    <div class="row">
+                        <div class="col-4">
+                            <h6>Stock</h6>
+                            <p>@bestTradedStock.StockData.Identifier.Name</p>
+                            <h6>Interval</h6>
+                            <p>@bestTradedStock.StockData.Interval</p>
+                            <h6>Start Date</h6>
+                            <p>@bestTradedStock.StockData.StartDate.ToString()</p>
+                            <h6>End Date</h6>
+                            <p>@bestTradedStock.StockData.EndDate.ToString()</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>First Position Date</h6>
+                            @if (firstClosedPosition != null)
+                            {
+                                <p>@firstClosedPosition.StartBar.Date</p>
                             }
-                        }
-                    </StockChartStockEvents>
-                </SfStockChart>
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>First Close Price</h6>
+                            @if (firstClosedPosition != null)
+                            {
+                                <p>@bestTradedStock.StockData.Bars.First().Value.Close</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>Last Position Date</h6>
+                            @if (lastClosedPosition != null)
+                            {
+                                <p>@lastClosedPosition.StartBar.Date</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>Last Close Price</h6>
+                            @if (lastClosedPosition != null)
+                            {
+                                <p>@bestTradedStock.StockData.Bars.Last().Value.Close</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <h6>Profit</h6>
+                            <p>@bestTradedStock.Profit</p>
+                            <h6>Number of Trades</h6>
+                            <p>@bestTradedStock.Positions.Count</p>
+                        </div>
+                    </div>
                 }
                 else
                 {
-                    <p>Not available</p>
+                    <p>No data available</p>
                 }
-            </div>            
+
+            }
         </ContentCell>
-        <ContentCell ColumnWidth="12">
-            <SfChart Title="Total Reward">
+        <ContentCell ColumnWidth="12" CellTitle="Last Best Trade Run Statistics">
+            @{
+                TradedStockStatistics bestTradedStock = null;
+
+                if (viewModel.SkilledEpochs != null && viewModel.SkilledEpochs.Count > 0)
+                {
+                    bestTradedStock = viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock;
+                }
+
+                if (bestTradedStock != null)
+                {
+                    ClosedPosition firstClosedPosition = (ClosedPosition)(viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock.Positions
+                            .Where(p => p is ClosedPosition).FirstOrDefault());
+
+                    ClosedPosition lastClosedPosition = (ClosedPosition)(viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock.Positions
+                        .Where(p => p is ClosedPosition).LastOrDefault());
+
+                    <div class="row">
+                        <div class="col-4">
+                            <h6>Stock</h6>
+                            <p>@bestTradedStock.StockData.Identifier.Name</p>
+                            <h6>Interval</h6>
+                            <p>@bestTradedStock.StockData.Interval</p>
+                            <h6>Start Date</h6>
+                            <p>@bestTradedStock.StockData.StartDate.ToString()</p>
+                            <h6>End Date</h6>
+                            <p>@bestTradedStock.StockData.EndDate.ToString()</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>First Position Date</h6>
+                            @if (firstClosedPosition != null)
+                            {
+                                <p>@firstClosedPosition.StartBar.Date</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>First Close Price</h6>
+                            @if (firstClosedPosition != null)
+                            {
+                                <p>@bestTradedStock.StockData.Bars.First().Value.Close</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>Last Position Date</h6>
+                            @if (lastClosedPosition != null)
+                            {
+                                <p>@lastClosedPosition.StartBar.Date</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                            <h6>Last Close Price</h6>
+                            @if (lastClosedPosition != null)
+                            {
+                                <p>@bestTradedStock.StockData.Bars.Last().Value.Close</p>
+                            }
+                            else
+                            {
+                                <p>No closed positions found.</p>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <h6>Profit</h6>
+                            <p>@bestTradedStock.Profit</p>
+                            <h6>Number of Trades</h6>
+                            <p>@bestTradedStock.Positions.Count</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>No data available</p>
+                }
+
+            }
+        </ContentCell>
+        <ContentCell ColumnWidth="6">
+            <SfChart Title="Best Trade Runs (Learning)">
                 <ChartSeriesCollection>
-                    <ChartSeries DataSource="@viewModel.LearningEpochs.Values" 
-                                 XName="@nameof(EpochStatistics.EpochID)" 
-                                 YName="@nameof(EpochStatistics.TotalIterationReward)" 
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.BestTradedStock.Profit;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
                     </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="6">
+            <SfChart Title="Best Trade Runs (Skilled)">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.BestTradedStock.Profit;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="12">
+            <SfChart Title="Total Learning Reward">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
+                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 YName="@nameof(EpochStatistics.TotalIterationReward)"
+                                 Type="ChartSeriesType.Line" Fill="#0000BB">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="12">
+            <SfChart Title="Total Skilled Reward">
+                <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.SkilledEpochs.Values"
                                  XName="@nameof(EpochStatistics.EpochID)"
                                  YName="@nameof(EpochStatistics.TotalIterationReward)"
@@ -182,19 +333,6 @@
                                  YName="Y"
                                  Type="ChartSeriesType.Scatter" Fill="#0000BB">
                     </ChartSeries>
-                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
-                                              {
-                                                  dynamic d = new ExpandoObject();
-                                                  d.X = e.Key;
-                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeDuration.TotalHours;
-
-                                                  return d;
-                                              }
-                                              )" EnableComplexProperty="true"
-                                 XName="X"
-                                 YName="Y"
-                                 Type="ChartSeriesType.Scatter" Fill="#BB0000">
-                    </ChartSeries>
                 </ChartSeriesCollection>
             </SfChart>
         </ContentCell>
@@ -213,19 +351,6 @@
                                  XName="X"
                                  YName="Y"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
-                    </ChartSeries>
-                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
-                                              {
-                                                  dynamic d = new ExpandoObject();
-                                                  d.X = e.Key;
-                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeProfit;
-
-                                                  return d;
-                                              }
-                                              )" EnableComplexProperty="true"
-                                 XName="X"
-                                 YName="Y"
-                                 Type="ChartSeriesType.Line" Fill="#BB0000">
                     </ChartSeries>
                 </ChartSeriesCollection>
             </SfChart>
@@ -246,6 +371,50 @@
                                  YName="Y"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
                     </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Average Trade Duration (Skilled)">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeDuration.TotalHours;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Scatter" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Average Trade Profit (Skilled)">
+                <ChartSeriesCollection>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                                              {
+                                                  dynamic d = new ExpandoObject();
+                                                  d.X = e.Key;
+                                                  d.Y = e.Value.BrokerSessionStatistics.AverageTradeProfit;
+
+                                                  return d;
+                                              }
+                                              )" EnableComplexProperty="true"
+                                 XName="X"
+                                 YName="Y"
+                                 Type="ChartSeriesType.Line" Fill="#BB0000">
+                    </ChartSeries>
+                </ChartSeriesCollection>
+            </SfChart>
+        </ContentCell>
+        <ContentCell ColumnWidth="4">
+            <SfChart Title="Number of Trades (Skilled)">
+                <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
                                               {
                                                   dynamic d = new ExpandoObject();

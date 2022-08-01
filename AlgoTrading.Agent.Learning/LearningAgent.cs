@@ -43,7 +43,7 @@ namespace AlgoTrading.Agent.Learning
             if (currentState.PreviousPosition != null && currentState.PreviousPosition is OpenPosition openPosition)
                 reward = CalculateReward(openPosition.OpeningValue, openPosition.GetCurrentValueChange(currentState.CurrentStockBar));
 
-            statistics.TotalReward += reward;
+            //statistics.TotalReward += reward;
             ProcessCollectedMemories(reward, currentState.ToDictionary(), possibleActions.GetActionStrings(), possibleActions.Count == 0);
 
             if (possibleActions.Count > 0)
@@ -232,7 +232,7 @@ namespace AlgoTrading.Agent.Learning
                 OnlineNetwork.ForwardFeed();
 
                 double actionQ = OnlineNetwork.GetOutputs()[memory.Actions[0]];
-                double temporalDifference = (estimatedTarget + cumulativeRewards) - actionQ;
+                double temporalDifference = cumulativeRewards - actionQ;
 
                 memory.SetTemporalDifference(temporalDifference);
                 MemoryBuffer.UpdatePriority(memory);

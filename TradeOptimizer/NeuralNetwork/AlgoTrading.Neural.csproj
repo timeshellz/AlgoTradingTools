@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Utilities\AlgoTrading.Utilities.csproj" />
-    <ProjectReference Include="..\DataKeeping\AlgoTrading.DataKeeping.csproj" />
   </ItemGroup>
 
 </Project>

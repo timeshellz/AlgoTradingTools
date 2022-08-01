@@ -67,7 +67,7 @@ namespace AlgoTrading.DQN
                     if (!brokerDataNotOver)
                     {
                         if (AgentBroker is IHistoricalBroker historicalBroker)
-                            await historicalBroker.GetBeginningTimestep();
+                            await historicalBroker.Start();
                         else
                             throw new Exception("Broker data over.");
                     }
@@ -89,7 +89,6 @@ namespace AlgoTrading.DQN
             statistics.UpdateCurrentTradeStatistics(brokerStatistics);
 
             AgentBroker.ResetStatistics();
-            Agent.UpdateTargetNetwork();
         }
 
         public void SaveNetwork()

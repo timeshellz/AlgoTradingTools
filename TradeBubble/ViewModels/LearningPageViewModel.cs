@@ -24,7 +24,7 @@ namespace TradeBubble.ViewModels
 
         public Dictionary<int, EpochStatistics> LearningEpochs { get; set; } = new Dictionary<int, EpochStatistics>();
         public Dictionary<int, EpochStatistics> SkilledEpochs { get; set; } = new Dictionary<int, EpochStatistics>();
-        public Dictionary<int, BrokerSessionStatistics> BrokerSessionStatistics1 { get; set; } = new Dictionary<int, BrokerSessionStatistics>();
+        public EpochStatistics BestEpoch { get; set; }
 
         public enum SetupState { LoadSaved, CreateNew, SelectStocks, None };        
 
@@ -116,9 +116,7 @@ namespace TradeBubble.ViewModels
             LearningEpochs = e.Statistics.LearningEpochs.ToDictionary(k => k.EpochID);
             SkilledEpochs = e.Statistics.SkilledEpochs.ToDictionary(k => k.EpochID);
 
-            BrokerSessionStatistics1 = LearningEpochs
-                .Select(e => new KeyValuePair<int, BrokerSessionStatistics>(e.Key, e.Value.BrokerSessionStatistics))
-                .ToDictionary(k => k.Key, v => v.Value);
+            BestEpoch = e.Statistics.BestSkilledEpoch;
 
             if(SkilledEpochs.Count > 0)
                 BestTradedStock = SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock;
@@ -128,7 +126,7 @@ namespace TradeBubble.ViewModels
 
         private void ConfirmSetup()
         {
-            BrokerConfiguration.StockNames = SelectedStocks.Select(e => e.Identifier).Distinct().ToList();
+            BrokerConfiguration.StockIdentifiers = SelectedStocks.Distinct().ToList();
 
             LearningManagerService.DirectorConfiguration = new LearningDirectorConfiguration(AgentConfiguration, NeuralConfiguration, BrokerConfiguration);
 
@@ -173,17 +171,5 @@ namespace TradeBubble.ViewModels
             else
                 IsLearningRunning = true;
         }
-    }
-
-    public class IntervalStockIdentifier
-    {
-        public DataInterval Interval { get; set; }
-        public StockIdentifier Identifier { get; set; }
-
-        public IntervalStockIdentifier(DataInterval interval, StockIdentifier identifier)
-        {
-            Interval = interval;
-            Identifier = identifier;
-        }
-    }
+    }   
 }

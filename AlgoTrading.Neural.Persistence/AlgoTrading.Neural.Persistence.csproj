@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Skender.Stock.Indicators" Version="1.15.0" />
+    <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
   </ItemGroup>
 
 </Project>

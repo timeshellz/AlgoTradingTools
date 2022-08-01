@@ -8,9 +8,9 @@ namespace AlgoTrading.Stocks.Persistence
 {
     public interface IStockPersistenceManager
     {
-        Task<List<StockData>> LoadStockData(Dictionary<StockIdentifier, DataInterval> stockInfo);
+        Task<List<StockData>> LoadStockData(List<IntervalStockIdentifier> stockInfo);
         Task<List<StockData>> LoadStockData(DataInterval interval);
-        Task<StockData> LoadStockData(StockIdentifier stockName, DataInterval interval);
+        Task<StockData> LoadStockData(IntervalStockIdentifier stockName);
         Task<List<StockIdentifier>> LoadStockIdentifiers(DataInterval interval);
         Task<Dictionary<DataInterval, List<StockIdentifier>>> LoadStockIdentifiers();
         Task SaveStockData(StockData stockData);

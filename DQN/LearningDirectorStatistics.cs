@@ -16,7 +16,7 @@ namespace AlgoTrading.DQN
         public int TotalMemories { get; set; }
         public List<EpochStatistics> LearningEpochs { get; set; } = new List<EpochStatistics>();
         public List<EpochStatistics> SkilledEpochs { get; set; } = new List<EpochStatistics>();
-
+        public EpochStatistics BestSkilledEpoch { get; set; }
         public EpochStatistics CurrentEpoch { get; set; } = new EpochStatistics();
 
         public double MaxLearningReward 
@@ -72,6 +72,11 @@ namespace AlgoTrading.DQN
             MaxSkilledReward = CurrentEpoch.AverageIterationReward;
 
             SkilledEpochs.Add(CurrentEpoch);
+
+            if (CurrentEpoch.BrokerSessionStatistics.BestTradedStock != null 
+                && (BestSkilledEpoch == null || BestSkilledEpoch.BrokerSessionStatistics.BestTradedStock.Profit < CurrentEpoch.BrokerSessionStatistics.BestTradedStock.Profit))
+                BestSkilledEpoch = CurrentEpoch;
+
             CurrentEpoch = new EpochStatistics();
         }
 

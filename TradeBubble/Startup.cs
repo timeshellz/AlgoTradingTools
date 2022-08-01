@@ -46,7 +46,7 @@ namespace TradeBubble
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly("AlgoTrading.Stocks.Persistence.Database")));
 
-            services.AddSingleton<IStockPersistenceManager, DatabasePersistenceManager>();
+            services.AddSingleton<IStockPersistenceManager, DatabaseStockPersistenceManager>();
 
             services.AddSingleton<IIndicatorProvider, SkenderIndicatorProvider>();
         }

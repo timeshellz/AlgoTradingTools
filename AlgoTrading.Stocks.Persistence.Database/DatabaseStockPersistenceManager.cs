@@ -7,23 +7,23 @@ using System.Linq;
 
 namespace AlgoTrading.Stocks.Persistence.Database
 {
-    public class DatabasePersistenceManager : IStockPersistenceManager
+    public class DatabaseStockPersistenceManager : IStockPersistenceManager
     {
         IDbContextFactory<StockDataContext> dbFactory;
 
-        public DatabasePersistenceManager(IDbContextFactory<StockDataContext> factory)
+        public DatabaseStockPersistenceManager(IDbContextFactory<StockDataContext> factory)
         {
             dbFactory = factory;
         }
 
-        public async Task<StockData> LoadStockData(StockIdentifier stockName, DataInterval interval)
+        public async Task<StockData> LoadStockData(IntervalStockIdentifier stockInfo)
         {
             try
             {
                 using (var db = dbFactory.CreateDbContext())
                 {
                     StockDataDTO result = await db.Stocks.Include(s => s.Info).Include(s => s.Bars)
-                        .FirstOrDefaultAsync(e => e.FIGI == stockName.FIGI && e.Interval == interval.GetTimeSpan());
+                        .FirstOrDefaultAsync(e => e.FIGI == stockInfo.Identifier.FIGI && e.Interval == stockInfo.Interval.GetTimeSpan());
 
                     return result.GetModel();
                 }
@@ -34,16 +34,16 @@ namespace AlgoTrading.Stocks.Persistence.Database
             }
         }
 
-        public async Task<List<StockData>> LoadStockData(Dictionary<StockIdentifier, DataInterval> stockInfo)
+        public async Task<List<StockData>> LoadStockData(List<IntervalStockIdentifier> stockInfo)
         {
             try
             {
                 using (var db = dbFactory.CreateDbContext())
                 {
-                    var figiStocks = stockInfo.ToDictionary(k => k.Key.FIGI);
+                    var figiStocks = stockInfo.ToDictionary(k => k.Identifier.FIGI);
 
                     List<StockData> result = await db.Stocks
-                        .Where(e => figiStocks.ContainsKey(e.FIGI) && figiStocks[e.FIGI].Value == e.Interval.GetInterval())
+                        .Where(e => figiStocks.ContainsKey(e.FIGI) && figiStocks[e.FIGI].Interval == e.Interval.GetInterval())
                         .Select(e => e.GetModel())
                         .ToListAsync();
 

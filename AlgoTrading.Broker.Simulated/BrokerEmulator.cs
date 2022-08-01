@@ -24,6 +24,8 @@ namespace AlgoTrading.Broker.Simulated
 
         private IStockPersistenceManager persistenceManager;
         private IIndicatorProvider indicatorProvider;
+
+        private Random stockRandomizer = new Random();
   
 
         public BrokerEmulator(BrokerConfiguration configuration, IStockPersistenceManager persistence,
@@ -37,10 +39,8 @@ namespace AlgoTrading.Broker.Simulated
         }
 
         public async Task Start()
-        {            
-            SelectedStockData = await persistenceManager.LoadStockData(Configuration.StockNames.First(), DataInterval.Day);
-            SelectedStockData.SetIndicators(indicatorProvider);
-
+        {
+            await SelectRandomStock();           
             await GetBeginningTimestep();
         }
 
@@ -110,6 +110,9 @@ namespace AlgoTrading.Broker.Simulated
 
         public List<BrokerAction> GetAvailableActions()
         {
+            if (CurrentState.Cash < Configuration.StartCapital * 0.5M && CurrentState.CurrentPosition == null)
+                return new List<BrokerAction>();
+
             if (nextStateBuilder != null)
             {
                 var result = new List<BrokerAction>();
@@ -139,17 +142,17 @@ namespace AlgoTrading.Broker.Simulated
                 if (can75)
                 {
                     result.Add(BrokerAction.Long75);
-                    //result.Add(BrokerAction.Short75);
+                    result.Add(BrokerAction.Short75);
                 }
                 if(can50)
                 {
                     result.Add(BrokerAction.Long50);
-                    //result.Add(BrokerAction.Short50);
+                    result.Add(BrokerAction.Short50);
                 }                    
                 if(can25)
                 {
                     result.Add(BrokerAction.Long25);
-                    //result.Add(BrokerAction.Short25);
+                    result.Add(BrokerAction.Short25);
                 }
 
                 if (canExit)
@@ -176,6 +179,17 @@ namespace AlgoTrading.Broker.Simulated
             double cashLimit = (double)CurrentState.Cash * percentage;
 
             return (int)(cashLimit / (double)CurrentState.CurrentStockBar.Close);
+        }
+
+        private async Task SelectRandomStock()
+        {
+            int stockIndex = 0;
+
+            if(Configuration.StockIdentifiers.Count > 0)
+                stockIndex = stockRandomizer.Next(0, Configuration.StockIdentifiers.Count);
+
+            SelectedStockData = await persistenceManager.LoadStockData(Configuration.StockIdentifiers.ElementAt(stockIndex));
+            SelectedStockData.SetIndicators(indicatorProvider);
         }
     }
 }

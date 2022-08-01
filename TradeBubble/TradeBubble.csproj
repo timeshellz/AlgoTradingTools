@@ -24,7 +24,6 @@
     <ProjectReference Include="..\AlgoTrading.Stocks.Tinkoff\AlgoTrading.Stocks.Tinkoff.csproj" />
     <ProjectReference Include="..\DQN\AlgoTrading.DQN.csproj" />
     <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
-    <ProjectReference Include="..\TradeOptimizer\DataKeeping\AlgoTrading.DataKeeping.csproj" />
     <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
   </ItemGroup>
 

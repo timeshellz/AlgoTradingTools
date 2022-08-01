@@ -116,6 +116,7 @@ namespace TradeBubble.Services
                 }
                 else
                 {
+                    director.Agent.UpdateTargetNetwork();
                     trainingEpochsElapsed = 0;
                     await director.DirectSkilledEpoch();                  
                 }

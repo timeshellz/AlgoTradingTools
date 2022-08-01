@@ -95,11 +95,11 @@ namespace TradeBubble.Services
             }            
         }
 
-        public static void GetSavedStockData(StockIdentifier identifier, DataInterval interval)
+        public static void GetSavedStockData(IntervalStockIdentifier identifier)
         {
             fetchQueue.Enqueue(async (token) =>
             {
-                var result = await persistenceManager.LoadStockData(identifier, interval);
+                var result = await persistenceManager.LoadStockData(identifier);
                 bool success = result != null;
 
                 StockDataLoaded?.Invoke(instance, new StockDataLoadedEventArgs(result, DataType.Saved, success));

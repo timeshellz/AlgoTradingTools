@@ -16,7 +16,6 @@
     <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
     <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
     <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
-    <ProjectReference Include="..\TradeOptimizer\DataKeeping\AlgoTrading.DataKeeping.csproj" />
     <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
     <ProjectReference Include="..\Utilities\AlgoTrading.Utilities.csproj" />
   </ItemGroup>
