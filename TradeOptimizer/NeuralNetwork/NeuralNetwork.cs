@@ -13,7 +13,7 @@ namespace AlgoTrading.Neural
     {
         public string Name { get; private set; }
         public Dictionary<int, List<INode>> Nodes { get; private set; }
-        public Dictionary<string, Dictionary<int, CategoricalOutputNeuron>> CategoricalOutputs { get; private set; }
+        //public Dictionary<string, Dictionary<int, CategoricalOutputNeuron>> CategoricalOutputs { get; private set; }
         public List<NodeConnection> NodeConnections { get; private set; }
         public NeuralConfiguration Settings { get; private set; }
 
@@ -78,8 +78,8 @@ namespace AlgoTrading.Neural
         {
             Nodes.Add(Settings.HiddenLayerCount + 1, new List<INode>());
 
-            if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
-            {
+            //if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
+            //{
                 foreach (string outputName in Settings.Outputs)
                 {
                     NonCategoricalOutputNeuron outputNode = new NonCategoricalOutputNeuron(Settings.HiddenLayerCount + 1, outputName);
@@ -87,38 +87,38 @@ namespace AlgoTrading.Neural
 
                     GenerateNewNeuralConnections(outputNode);
                 }
-            }
-            else
-            {
-                Nodes.Add(Settings.HiddenLayerCount + 2, new List<INode>());
+            //}
+            //else
+            //{
+            //    Nodes.Add(Settings.HiddenLayerCount + 2, new List<INode>());
 
-                CategoricalOutputs = new Dictionary<string, Dictionary<int, CategoricalOutputNeuron>>();
+            //    CategoricalOutputs = new Dictionary<string, Dictionary<int, CategoricalOutputNeuron>>();
 
-                foreach (string outputName in Settings.Outputs)
-                {
-                    CategoricalOutputs.Add(outputName, new Dictionary<int, CategoricalOutputNeuron>());
+            //    foreach (string outputName in Settings.Outputs)
+            //    {
+            //        CategoricalOutputs.Add(outputName, new Dictionary<int, CategoricalOutputNeuron>());
 
-                    for(int i = 0; i < Settings.AtomCount; i++)
-                    {
-                        CategoricalOutputNeuron outputNode = new CategoricalOutputNeuron(Settings.HiddenLayerCount + 1, outputName);
-                        Nodes[outputNode.Layer].Add(outputNode);
+            //        for(int i = 0; i < Settings.AtomCount; i++)
+            //        {
+            //            CategoricalOutputNeuron outputNode = new CategoricalOutputNeuron(Settings.HiddenLayerCount + 1, outputName);
+            //            Nodes[outputNode.Layer].Add(outputNode);
 
-                        outputNode.AtomSupport = Settings.MinV + i * Settings.DeltaZ;
+            //            outputNode.AtomSupport = Settings.MinV + i * Settings.DeltaZ;
 
-                        GenerateNewNeuralConnections(outputNode);
+            //            GenerateNewNeuralConnections(outputNode);
 
-                        CategoricalOutputs[outputName].Add(i, outputNode);
-                    }
+            //            CategoricalOutputs[outputName].Add(i, outputNode);
+            //        }
 
-                    foreach(CategoricalOutputNeuron outputNeuron in CategoricalOutputs[outputName].Values)
-                    {
-                        SoftMaxNode softMaxNode = new SoftMaxNode(outputNeuron);
-                        Nodes[softMaxNode.Layer].Add(softMaxNode);
+            //        foreach(CategoricalOutputNeuron outputNeuron in CategoricalOutputs[outputName].Values)
+            //        {
+            //            SoftMaxNode softMaxNode = new SoftMaxNode(outputNeuron);
+            //            Nodes[softMaxNode.Layer].Add(softMaxNode);
 
-                        GenerateNewNeuralConnections(softMaxNode);
-                    }
-                }
-            }
+            //            GenerateNewNeuralConnections(softMaxNode);
+            //        }
+            //    }
+            //}
         }
 
         void GenerateNewNeuralConnections(INode newNode)
@@ -156,29 +156,29 @@ namespace AlgoTrading.Neural
         {
             Dictionary<string, double> output = new Dictionary<string, double>();
 
-            if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
-            {
+            //if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
+            //{
                 foreach (INode node in Nodes[Nodes.Count - 1])
                 {
                     OutputNeuron outputNeuron = (OutputNeuron)node;
 
                     output.Add(outputNeuron.Name, outputNeuron.Value);
                 }
-            }
-            else
-            {
-                foreach (KeyValuePair<string, Dictionary<int, CategoricalOutputNeuron>> atomSet in CategoricalOutputs)
-                {
-                    double distributionSum = 0;
+            //}
+            //else
+            //{
+            //    foreach (KeyValuePair<string, Dictionary<int, CategoricalOutputNeuron>> atomSet in CategoricalOutputs)
+            //    {
+            //        double distributionSum = 0;
 
-                    foreach(CategoricalOutputNeuron neuron in atomSet.Value.Values)
-                    {
-                        distributionSum += neuron.RelatedSoftMaxOutput.Value * neuron.AtomSupport;
-                    }
+            //        foreach(CategoricalOutputNeuron neuron in atomSet.Value.Values)
+            //        {
+            //            distributionSum += neuron.RelatedSoftMaxOutput.Value * neuron.AtomSupport;
+            //        }
 
-                    output.Add(atomSet.Key, distributionSum);
-                }
-            }
+            //        output.Add(atomSet.Key, distributionSum);
+            //    }
+            //}
 
             return output;
         }
@@ -194,30 +194,30 @@ namespace AlgoTrading.Neural
                 }
             }
 
-            if (Settings.PredictionType != NeuralConfiguration.PredictionMechanism.NonCategorical)
-            {
-                foreach(Dictionary<int, CategoricalOutputNeuron> atomSet in CategoricalOutputs.Values)
-                {
-                    double maxValue = 0;
-                    double exponentSum = 0;
+            //if (Settings.PredictionType != NeuralConfiguration.PredictionMechanism.NonCategorical)
+            //{
+            //    foreach(Dictionary<int, CategoricalOutputNeuron> atomSet in CategoricalOutputs.Values)
+            //    {
+            //        double maxValue = 0;
+            //        double exponentSum = 0;
 
-                    foreach(CategoricalOutputNeuron outputNeuron in atomSet.Values)
-                    {
-                        if (outputNeuron.Value > maxValue)
-                            maxValue = outputNeuron.Value;
-                    }
+            //        foreach(CategoricalOutputNeuron outputNeuron in atomSet.Values)
+            //        {
+            //            if (outputNeuron.Value > maxValue)
+            //                maxValue = outputNeuron.Value;
+            //        }
 
-                    foreach (CategoricalOutputNeuron outputNeuron in atomSet.Values)
-                    {
-                        exponentSum += Math.Exp(outputNeuron.Value - maxValue);
-                    }
+            //        foreach (CategoricalOutputNeuron outputNeuron in atomSet.Values)
+            //        {
+            //            exponentSum += Math.Exp(outputNeuron.Value - maxValue);
+            //        }
 
-                    foreach(CategoricalOutputNeuron outputNeuron in atomSet.Values)
-                    {
-                        outputNeuron.RelatedSoftMaxOutput.Activate(maxValue, exponentSum);
-                    }
-                }
-            }           
+            //        foreach(CategoricalOutputNeuron outputNeuron in atomSet.Values)
+            //        {
+            //            outputNeuron.RelatedSoftMaxOutput.Activate(maxValue, exponentSum);
+            //        }
+            //    }
+            //}           
         }
 
         public void Backpropagate(IBackpropagationSpecification specification)
@@ -249,8 +249,8 @@ namespace AlgoTrading.Neural
 
         void PropagateOutputs(IBackpropagationSpecification specification)
         {
-            if(specification.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
-            {
+            //if(specification.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
+            //{
                 foreach(INode node in Nodes[Nodes.Keys.Count - 1])
                 {
                     if (node.GetType() == typeof(NonCategoricalOutputNeuron))
@@ -259,44 +259,44 @@ namespace AlgoTrading.Neural
                         outputNeuron.GetDelta((HuberLossBackpropagationSpecification)specification);
                     }
                 }
-            }
-            else
-            {
-                if(specification is CrossEntropyBackpropagationSpecification)
-                {
-                    CrossEntropyBackpropagationSpecification spec = (CrossEntropyBackpropagationSpecification)specification;
-                    Dictionary<int, double> targetProbabilities = new Dictionary<int, double>();
+            //}
+            //else
+            //{
+            //    if(specification is CrossEntropyBackpropagationSpecification)
+            //    {
+            //        CrossEntropyBackpropagationSpecification spec = (CrossEntropyBackpropagationSpecification)specification;
+            //        Dictionary<int, double> targetProbabilities = new Dictionary<int, double>();
 
-                    foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
-                    {
-                        targetProbabilities.Add(outputAtom.Key, 0);
-                    }
+            //        foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
+            //        {
+            //            targetProbabilities.Add(outputAtom.Key, 0);
+            //        }
 
-                    foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
-                    {
-                        double b = (spec.TargetValues[outputAtom.Key] - Settings.MinV) / Settings.DeltaZ;
-                        double l = Math.Floor(b);
-                        double u = Math.Ceiling(b);
+            //        foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
+            //        {
+            //            double b = (spec.TargetValues[outputAtom.Key] - Settings.MinV) / Settings.DeltaZ;
+            //            double l = Math.Floor(b);
+            //            double u = Math.Ceiling(b);
 
-                        targetProbabilities[(int)l] += spec.EstimatedTargetValueProbabilities[outputAtom.Key] * (u - b);
-                        targetProbabilities[(int)u] += spec.EstimatedTargetValueProbabilities[outputAtom.Key] * (b - l);
-                    }
+            //            targetProbabilities[(int)l] += spec.EstimatedTargetValueProbabilities[outputAtom.Key] * (u - b);
+            //            targetProbabilities[(int)u] += spec.EstimatedTargetValueProbabilities[outputAtom.Key] * (b - l);
+            //        }
 
-                    foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
-                    {
-                        outputAtom.Value.GetDelta(spec, targetProbabilities[outputAtom.Key]);
-                    }
-                }
-                else
-                {
-                   // QuantileBackpropagationSpecification spec = (QuantileBackpropagationSpecification)specification;
+            //        foreach (KeyValuePair<int, CategoricalOutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
+            //        {
+            //            outputAtom.Value.GetDelta(spec, targetProbabilities[outputAtom.Key]);
+            //        }
+            //    }
+            //    else
+            //    {
+            //       // QuantileBackpropagationSpecification spec = (QuantileBackpropagationSpecification)specification;
 
-                   // foreach (KeyValuePair<int, OutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
-                    //{
-                    //    outputAtom.Value.GetDelta(spec);
-                    //}
-                }
-            }
+            //       // foreach (KeyValuePair<int, OutputNeuron> outputAtom in CategoricalOutputs[specification.TargetName])
+            //        //{
+            //        //    outputAtom.Value.GetDelta(spec);
+            //        //}
+            //    }
+            //}
         }
 
         public void UpdateWeights(bool isAscent = false)
