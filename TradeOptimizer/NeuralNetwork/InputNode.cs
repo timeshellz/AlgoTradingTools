@@ -6,21 +6,26 @@ using MathNet.Numerics.Distributions;
 
 namespace AlgoTrading.Neural
 {
-    class InputNode : INode
+    public class InputNode : INode
     {
         public double Value { get; set; }
         public string Name { get; set; }
         public int Layer { get; set; }
         [JsonIgnore]
-        public List<NodeConnection> Connections { get; set; }
+        public List<NodeConnection> Connections { get; set; } = new List<NodeConnection>();
 
         public InputNode(int layer, string name)
         {
             Name = name;
             Layer = layer;
-            Connections = new List<NodeConnection>();
         }
 
+        public InputNode(int layer, string name, List<NodeConnection> connections) : this(layer, name)
+        {
+            Name = name;
+            Layer = layer;
+            Connections = connections;
+        }
 
         public NodeConnection Connect(INode otherNode, ConnectionDirection direction, double weight)
         {

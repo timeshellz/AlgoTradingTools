@@ -4,7 +4,9 @@ using System.Text;
 
 namespace AlgoTrading.Neural.Persistence.Database.DTO
 {
-    class Class1
+    public class NodeDTO
     {
+        public int Id { get; set; }
+        public int Layer { get; set; }
     }
 }

@@ -19,6 +19,8 @@
   <ItemGroup>
     <ProjectReference Include="..\AlgoTrading.Broker.Simulated\AlgoTrading.Broker.Simulated.csproj" />
     <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Neural.Persistence.Database\AlgoTrading.Neural.Persistence.Database.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Neural.Persistence\AlgoTrading.Neural.Persistence.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Persistence.Database\AlgoTrading.Stocks.Persistence.Database.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Persistence\AlgoTrading.Stocks.Persistence.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Tinkoff\AlgoTrading.Stocks.Tinkoff.csproj" />

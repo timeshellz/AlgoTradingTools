@@ -238,7 +238,7 @@
         <ContentCell ColumnWidth="6">
             <SfChart Title="Best Trade Runs (Learning)">
                 <ChartSeriesCollection>
-                    <ChartSeries DataSource="@viewModel.LearningEpochs.Select(e =>
+                    <ChartSeries DataSource="@viewModel.LearningEpochs.Where(e => e.Value.BrokerSessionStatistics.BestTradedStock != null).Select(e =>
                                               {
                                                   dynamic d = new ExpandoObject();
                                                   d.X = e.Key;
@@ -257,7 +257,7 @@
         <ContentCell ColumnWidth="6">
             <SfChart Title="Best Trade Runs (Skilled)">
                 <ChartSeriesCollection>
-                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Select(e =>
+                    <ChartSeries DataSource="@viewModel.SkilledEpochs.Where(e => e.Value.BrokerSessionStatistics.BestTradedStock != null).Select(e =>
                                               {
                                                   dynamic d = new ExpandoObject();
                                                   d.X = e.Key;

@@ -1,6 +1,8 @@
 using AlgoTrading.Stocks.Persistence;
 using AlgoTrading.Stocks.Persistence.Database;
 using AlgoTrading.Stocks;
+using AlgoTrading.Neural.Persistence;
+using AlgoTrading.Neural.Persistence.Database;
 using AlgoTrading.Broker.Simulated;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,8 +48,12 @@ namespace TradeBubble
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly("AlgoTrading.Stocks.Persistence.Database")));
 
-            services.AddSingleton<IStockPersistenceManager, DatabaseStockPersistenceManager>();
+            services.AddDbContextFactory<NeuralDataContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("AlgoTrading.Neural.Persistence.Database")));
 
+            services.AddSingleton<IStockPersistenceManager, DatabaseStockPersistenceManager>();
+            services.AddSingleton<INeuralPersistenceManager, DatabaseNeuralPersistenceManager>();
             services.AddSingleton<IIndicatorProvider, SkenderIndicatorProvider>();
         }
 

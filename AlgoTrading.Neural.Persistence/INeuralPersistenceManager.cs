@@ -7,6 +7,6 @@ namespace AlgoTrading.Neural.Persistence
     public interface INeuralPersistenceManager
     {
         Task<NeuralNetwork> LoadNeuralNetwork(string networkName);
-        Task SaveNeuralNetwok(NeuralNetwork network);
+        Task SaveNeuralNetwork(NeuralNetwork network);
     }
 }

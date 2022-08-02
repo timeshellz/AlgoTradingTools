@@ -31,6 +31,21 @@ namespace AlgoTrading.Neural
             CreateOutputNeurons();
         }
 
+        public NeuralNetwork(List<INode> inputNodes, List<INode> hiddenNeurons, 
+            List<INode> outputNeurons, NeuralConfiguration configuration)
+        {
+            Name = configuration.NetworkName;
+            Settings = configuration;
+            Nodes = new Dictionary<int, List<INode>>();
+
+            Nodes.Add(0, inputNodes.ToList());
+            
+            for(int i = 1; i <= Settings.HiddenLayerCount; i++)
+                Nodes.Add(i, hiddenNeurons.Where(n => n.Layer == i).ToList());
+
+            Nodes.Add(Settings.HiddenLayerCount + 1, outputNeurons.ToList());
+        }
+
         [OnDeserialized]
         void ReassignConnections(StreamingContext context)
         {
@@ -387,11 +402,11 @@ namespace AlgoTrading.Neural
         public List<string> Outputs { get; set; } = new List<string>();
         public int HiddenLayerCount { get; set; } = 3;
         public double LearningRate { get; set; } = 0.01;
-        public PredictionMechanism PredictionType { get; set; } = PredictionMechanism.NonCategorical;
-        public int AtomCount { get; set; } = 1;
-        public double MinV { get; set; } = -10;
-        public double MaxV { get; set; } = 10;
-        public double DeltaZ { get; set; } = 0;
+        //public PredictionMechanism PredictionType { get; set; } = PredictionMechanism.NonCategorical;
+        //public int AtomCount { get; set; } = 1;
+        //public double MinV { get; set; } = -10;
+        //public double MaxV { get; set; } = 10;
+        //public double DeltaZ { get; set; } = 0;
         
         //public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate)
         //{

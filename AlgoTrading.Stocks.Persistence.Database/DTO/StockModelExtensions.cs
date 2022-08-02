@@ -6,7 +6,7 @@ using AlgoTrading.Stocks;
 
 namespace AlgoTrading.Stocks.Persistence.Database
 {
-    public static class ModelExtensions
+    public static class StockModelExtensions
     {
         public static StockBarDTO GetDTO(this StockBar stockBar)
         {

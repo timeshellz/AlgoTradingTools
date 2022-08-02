@@ -1,5 +1,6 @@
 ﻿using AlgoTrading.DQN;
 using AlgoTrading.Neural;
+using AlgoTrading.Neural.Persistence;
 using AlgoTrading.Agent.Learning;
 using AlgoTrading.Stocks;
 using AlgoTrading.Stocks.Persistence;
@@ -118,12 +119,24 @@ namespace TradeBubble.Services
                 {
                     director.Agent.UpdateTargetNetwork();
                     trainingEpochsElapsed = 0;
-                    await director.DirectSkilledEpoch();                  
+
+                    var bestResult = director.GetStatistics().BestSkilledEpoch;
+                    await director.DirectSkilledEpoch();
+
+                    if (director.GetStatistics().BestSkilledEpoch != bestResult)
+                        await SaveNetwork(director.Agent.TargetNetwork);
                 }
 
                 StatisticsUpdated?.Invoke(this, new LearningStatisticsUpdatedEventArgs(director.GetStatistics()));
             }
             
+        }
+
+        private async Task SaveNetwork(NeuralNetwork network)
+        {
+            INeuralPersistenceManager persistenceManager = (INeuralPersistenceManager)serviceProvider.GetService(typeof(INeuralPersistenceManager));
+
+            await persistenceManager.SaveNeuralNetwork(network);
         }
     }
 

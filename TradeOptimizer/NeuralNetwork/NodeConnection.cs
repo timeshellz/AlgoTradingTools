@@ -16,10 +16,12 @@ namespace AlgoTrading.Neural
         public INode InputNode { get; private set; }
         public INode OutputNode { get; private set; }
 
-        public NodeConnection(INode inputNode, INode outputNode, double weight)
+        public NodeConnection(INode inputNode, INode outputNode, double weight) : this(lastID++, inputNode, outputNode, weight)
+        { }
+
+        public NodeConnection(int id, INode inputNode, INode outputNode, double weight)
         {
-            ID = lastID;
-            lastID++;
+            ID = id;
             Weight = weight;
             InputNode = inputNode;
             OutputNode = outputNode;
