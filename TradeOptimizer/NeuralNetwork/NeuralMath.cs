@@ -116,33 +116,37 @@ namespace AlgoTrading.Neural
             return weight * Math.Sqrt(2d / dimesionOfPreviousLayer);
         }
 
-        public static void StandardizeData(Dictionary<string, double> input)
+        public static Dictionary<string, double> GetStandardizedData(Dictionary<string, double> input)
         {
+            var output = new Dictionary<string, double>(input);
+
             double mean = 0;
             double variance = 0;
 
-            int count = input.Values.Count;
+            int count = output.Values.Count;
 
-            foreach (double value in input.Values)
+            foreach (double value in output.Values)
             {
                 mean += value;
             }
 
             mean /= count;
 
-            foreach (double value in input.Values)
+            foreach (double value in output.Values)
             {
                 variance += Math.Pow(value - mean, 2);
             }
 
             variance = Math.Sqrt(variance/count);
 
-            for (int i = 0; i < input.Values.Count; i++)
+            for (int i = 0; i < output.Values.Count; i++)
             {
-                var element = input.ElementAt(i);
-                input.Remove(element.Key);
-                input.Add(element.Key, (element.Value - mean) / variance);
+                var element = output.ElementAt(i);
+                output.Remove(element.Key);
+                output.Add(element.Key, (element.Value - mean) / variance);
             }
+
+            return output;
         }
     }
 }

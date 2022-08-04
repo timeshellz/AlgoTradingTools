@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Agent.Benchmarking\AlgoTrading.Agent.Benchmarking.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Agent\AlgoTrading.Agent.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
+    <ProjectReference Include="..\DQN\AlgoTrading.DQN.csproj" />
+    <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
+  </ItemGroup>
+
+</Project>

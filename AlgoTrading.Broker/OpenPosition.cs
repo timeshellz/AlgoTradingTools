@@ -24,7 +24,10 @@ namespace AlgoTrading.Broker
 
         public decimal GetTotalOpenCharge()
         {
-            return OpeningValue + GetOpenCommissionCharge();
+            if(Size > 0)
+                return OpeningValue + GetOpenCommissionCharge();
+            else
+                return OpeningValue - GetOpenCommissionCharge();
         }
 
         public decimal GetOpenCommissionCharge()

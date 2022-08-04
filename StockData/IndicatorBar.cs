@@ -9,6 +9,7 @@ namespace AlgoTrading.Stocks
         public DateTime Date { get; set; }
         public decimal? Stochastic { get; set; }
         public decimal? StochasticSignal { get; set; }
+        public decimal? RSI { get; set; }
         public decimal? SMA200 { get; set; }
         public decimal? SMA50 { get; set; }
         public decimal? DEMA { get; set; }
@@ -23,6 +24,7 @@ namespace AlgoTrading.Stocks
         public decimal? ADX { get; set; }
         public decimal? AroonUp { get; set; }
         public decimal? AroonDown { get; set; }
+        public decimal? ROC { get; set; }
         public decimal? TripleDerivative { get; set; }
     }
 
@@ -32,6 +34,7 @@ namespace AlgoTrading.Stocks
         {
             if (bar.Stochastic == null ||
                 bar.StochasticSignal == null ||
+                bar.RSI == null ||
                 bar.SMA200 == null ||
                 bar.DEMA == null ||
                 bar.DEMAROC == null ||
@@ -44,6 +47,7 @@ namespace AlgoTrading.Stocks
                 bar.ADX == null ||
                 bar.AroonUp == null ||
                 bar.AroonDown == null ||
+                bar.ROC == null ||
                 bar.TripleDerivative == null)
                 return false;
 

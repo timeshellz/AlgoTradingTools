@@ -9,6 +9,7 @@ namespace AlgoTrading.Broker
     {
         public decimal Cash { get; set; }
         public decimal Equity { get; set; }
+        public decimal EquityChange { get; set; }
         public StockBar PreviousStockBar { get; set; }
         public StockBar CurrentStockBar { get; set; }
         public IndicatorBar PreviousIndicators { get; set; }
@@ -49,12 +50,14 @@ namespace AlgoTrading.Broker
             {
                 "Cash",
                 "Equity",
+                "High",
                 "Low",
                 "Open",
                 "Close",
                 "Volume",
                 "Stochastic",
                 "StochasticSignal",
+                "RSI",
                 "SMA200",
                 "SMA50",
                 "DEMA",
@@ -69,6 +72,7 @@ namespace AlgoTrading.Broker
                 "ADX",
                 "AroonUp",
                 "AroonDown",
+                "ROC",
                 "TripleDerivative",
             };
         }
@@ -192,12 +196,14 @@ namespace AlgoTrading.Broker
             {
                 ["Cash"] = (double)state.Cash,
                 ["Equity"] = (double)state.Equity,
+                ["High"] = (double)state.CurrentStockBar.High,
                 ["Low"] = (double)state.CurrentStockBar.Low,
                 ["Open"] = (double)state.CurrentStockBar.Open,
                 ["Close"] = (double)state.CurrentStockBar.Close,
                 ["Volume"] = (double)state.CurrentStockBar.Volume,
                 ["Stochastic"] = (double)(state.CurrentIndicators.Stochastic ?? 0),
                 ["StochasticSignal"] = (double)(state.CurrentIndicators.StochasticSignal ?? 0),
+                ["RSI"] = (double)(state.CurrentIndicators.RSI),
                 ["SMA200"] = (double)(state.CurrentIndicators.SMA200 ?? 0),
                 ["SMA50"] = (double)(state.CurrentIndicators.SMA50 ?? 0),
                 ["DEMA"] = (double)(state.CurrentIndicators.DEMA ?? 0),
@@ -212,6 +218,7 @@ namespace AlgoTrading.Broker
                 ["ADX"] = (double)(state.CurrentIndicators.ADX ?? 0),
                 ["AroonUp"] = (double)(state.CurrentIndicators.AroonUp ?? 0),
                 ["AroonDown"] = (double)(state.CurrentIndicators.AroonDown ?? 0),
+                ["ROC"] = (double)(state.CurrentIndicators.ROC),
                 ["TripleDerivative"] = (double)(state.CurrentIndicators.TripleDerivative ?? 0),
             };
         }

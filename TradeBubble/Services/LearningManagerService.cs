@@ -1,4 +1,5 @@
 ﻿using AlgoTrading.DQN;
+using AlgoTrading.DQN.Learning;
 using AlgoTrading.Neural;
 using AlgoTrading.Neural.Persistence;
 using AlgoTrading.Agent.Learning;
@@ -124,7 +125,7 @@ namespace TradeBubble.Services
                     await director.DirectSkilledEpoch();
 
                     if (director.GetStatistics().BestSkilledEpoch != bestResult)
-                        await SaveNetwork(director.Agent.TargetNetwork);
+                        await SaveNetwork(director.Agent.OnlineNetwork);
                 }
 
                 StatisticsUpdated?.Invoke(this, new LearningStatisticsUpdatedEventArgs(director.GetStatistics()));

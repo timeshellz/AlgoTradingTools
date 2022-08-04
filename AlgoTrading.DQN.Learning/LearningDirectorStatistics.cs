@@ -4,14 +4,13 @@ using System.Text;
 using AlgoTrading.Broker;
 using AlgoTrading.Statistics;
 
-namespace AlgoTrading.DQN
+namespace AlgoTrading.DQN.Learning
 {
     public class LearningDirectorStatistics : IStatistics
     {
         private double maxIterationReward = double.MinValue;
         private double maxSkilledReward = double.MinValue;
 
-        public DateTime LearningStartTime { get; set; } = DateTime.Now;
         public int CurrentLearningEpochID { get; set; }       
         public int TotalMemories { get; set; }
         public List<EpochStatistics> LearningEpochs { get; set; } = new List<EpochStatistics>();
@@ -74,7 +73,8 @@ namespace AlgoTrading.DQN
             SkilledEpochs.Add(CurrentEpoch);
 
             if (CurrentEpoch.BrokerSessionStatistics.BestTradedStock != null 
-                && (BestSkilledEpoch == null || BestSkilledEpoch.BrokerSessionStatistics.BestTradedStock.Profit < CurrentEpoch.BrokerSessionStatistics.BestTradedStock.Profit))
+                && (BestSkilledEpoch == null 
+                || BestSkilledEpoch.BrokerSessionStatistics.BestTradedStock.Profit < CurrentEpoch.BrokerSessionStatistics.BestTradedStock.Profit))
                 BestSkilledEpoch = CurrentEpoch;
 
             CurrentEpoch = new EpochStatistics();

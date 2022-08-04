@@ -157,13 +157,17 @@ namespace AlgoTrading.Neural
             if (newInputs.Values.Count != Settings.Inputs.Count)
                 throw new ArgumentException("Input count not equal to neural network specifications.");
 
-            if(standardize)
-                NeuralMath.StandardizeData(newInputs);
+            Dictionary<string, double> inputs;
 
-            foreach(INode node in Nodes[0])
+            if (standardize)
+                inputs = NeuralMath.GetStandardizedData(newInputs);
+            else
+                inputs = new Dictionary<string, double>(newInputs);
+
+            foreach (INode node in Nodes[0])
             {
                 InputNode ioNode = (InputNode)node;
-                ioNode.Value = newInputs[ioNode.Name];
+                ioNode.Value = inputs[ioNode.Name];
             }
         }
 

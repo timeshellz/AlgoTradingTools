@@ -8,21 +8,18 @@ using AlgoTrading.Statistics;
 using AlgoTrading.Agent.Learning;
 using System.Threading.Tasks;
 
-namespace AlgoTrading.DQN
+namespace AlgoTrading.DQN.Learning
 {
-    public class LearningAgentDirector : IStatisticsProvider<LearningDirectorStatistics>
+    public class LearningAgentDirector : TradingAgentDirector, IStatisticsProvider<LearningDirectorStatistics>
     {       
         private LearningDirectorStatistics statistics = new LearningDirectorStatistics();
 
-        public LearningAgent Agent { get; private set; }
-        public IBroker AgentBroker { get; private set; }
+        new public LearningAgent Agent { get; private set; }
         public int EpochSize { get; }
 
-        public LearningAgentDirector(LearningAgent agent)
+        public LearningAgentDirector(LearningAgent agent) : base(agent)
         {
             Agent = agent;
-            AgentBroker = Agent.Broker;
-
             //TODO: Epoch size should depend on all loaded stocks in the broker, not just single stock data
             EpochSize = AgentBroker.SelectedStockData.Bars.Count;
         }        
@@ -57,25 +54,9 @@ namespace AlgoTrading.DQN
 
             while (epochInteractionCount < EpochSize)
             {
-                int iterationInteractionCount = 0;
+                epochInteractionCount += await DirectIteration(Agent.Configuration.BatchSize + Agent.Configuration.MemorySteps);
 
-                while (iterationInteractionCount < Agent.Configuration.BatchSize + Agent.Configuration.MemorySteps)
-                {                    
-                    var brokerDataNotOver = await Agent.Interact();
-                    iterationInteractionCount++;
-
-                    if (!brokerDataNotOver)
-                    {
-                        if (AgentBroker is IHistoricalBroker historicalBroker)
-                            await historicalBroker.Start();
-                        else
-                            throw new Exception("Broker data over.");
-                    }
-                }
-
-                epochInteractionCount += iterationInteractionCount;
-
-                if (allowTraining && Agent.MemoryBuffer.Count > EpochSize)
+                if (allowTraining && (Agent.MemoryBuffer.Count > EpochSize || Agent.MemoryBuffer.Size == Agent.MemoryBuffer.Count))
                     Agent.Train();
 
                 var iterationStatistics = Agent.GetStatistics();              
@@ -89,15 +70,7 @@ namespace AlgoTrading.DQN
             statistics.UpdateCurrentTradeStatistics(brokerStatistics);
 
             AgentBroker.ResetStatistics();
-        }
-
-        public void SaveNetwork()
-        {
-            //if (AgentSaveManager == null)
-            //    throw new NullReferenceException();
-
-            //NeuralSaveManager.SaveNetwork(NeuralNetwork);
-            //AgentSaveManager.SaveAgent(Agent);
+            await AgentBroker.Start();
         }
 
         public LearningDirectorStatistics GetStatistics()

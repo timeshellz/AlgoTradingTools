@@ -26,8 +26,13 @@ namespace AlgoTrading.Broker.Simulated
         private IIndicatorProvider indicatorProvider;
 
         private Random stockRandomizer = new Random();
-  
 
+        private bool CanExecuteActions
+        {
+            get => nextStateBuilder != null && CurrentState != null && Configuration != null
+                && CurrentState.Cash + CurrentState.Equity - (CurrentState.Equity * Configuration.Commission) >= Configuration.StartCapital * 0.5M;
+        }
+  
         public BrokerEmulator(BrokerConfiguration configuration, IStockPersistenceManager persistence,
             IIndicatorProvider indicators)
         {
@@ -49,6 +54,12 @@ namespace AlgoTrading.Broker.Simulated
             CurrentState = nextStateBuilder.GetNextState();
 
             PrepareNextState();
+
+            if (!CanExecuteActions 
+                && (sessionStatistics.BestTradedStock == null 
+                || sessionStatistics.BestTradedStock != null 
+                && sessionStatistics.BestTradedStock.Profit < currentStockStatistics.Profit))
+                sessionStatistics.BestTradedStock = currentStockStatistics;
 
             return Task.FromResult(CurrentState);
         }
@@ -99,21 +110,14 @@ namespace AlgoTrading.Broker.Simulated
                 sessionStatistics.TotalTrades++;
                 currentStockStatistics.Positions.Add(position);
 
-                sessionStatistics.TotalTradeProfit += position.GetCommissionedPositionProfit();
-                currentStockStatistics.Profit += position.GetCommissionedPositionProfit();
-
-                if (sessionStatistics.BestTradedStock == null ||
-                sessionStatistics.BestTradedStock.Profit < currentStockStatistics.Profit)
-                    sessionStatistics.BestTradedStock = currentStockStatistics;
+                sessionStatistics.TotalTradeProfit += position.CommissionedProfit;
+                currentStockStatistics.Profit += position.CommissionedProfit;               
             }                
         }
 
         public List<BrokerAction> GetAvailableActions()
         {
-            if (CurrentState.Cash < Configuration.StartCapital * 0.5M && CurrentState.CurrentPosition == null)
-                return new List<BrokerAction>();
-
-            if (nextStateBuilder != null)
+            if (CanExecuteActions)
             {
                 var result = new List<BrokerAction>();
                 result.Add(BrokerAction.Skip);
@@ -161,17 +165,18 @@ namespace AlgoTrading.Broker.Simulated
                 return result;
             }
             else
-                return new List<BrokerAction>();
+                return new List<BrokerAction>();           
         }
 
         public BrokerSessionStatistics GetStatistics()
-        {            
+        {           
             return sessionStatistics;
         }
 
         public void ResetStatistics()
         {
             sessionStatistics = new BrokerSessionStatistics();
+            currentStockStatistics = new TradedStockStatistics();
         }
 
         public int GetLimitedPositionSize(double percentage)
@@ -182,14 +187,14 @@ namespace AlgoTrading.Broker.Simulated
         }
 
         private async Task SelectRandomStock()
-        {
+        {            
             int stockIndex = 0;
 
             if(Configuration.StockIdentifiers.Count > 0)
                 stockIndex = stockRandomizer.Next(0, Configuration.StockIdentifiers.Count);
 
             SelectedStockData = await persistenceManager.LoadStockData(Configuration.StockIdentifiers.ElementAt(stockIndex));
-            SelectedStockData.SetIndicators(indicatorProvider);
+            SelectedStockData.SetIndicators(indicatorProvider);            
         }
     }
 }

@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AlgoTrading.Agent;
 using AlgoTrading.Neural;
 using AlgoTrading.Broker;
-using AlgoTrading.Agent.Learning;
-using System.IO;
 
 namespace AlgoTrading.DQN
 {
-    public class LearningDirectorConfiguration
+    public class AgentDirectorConfiguration
     {
-        public LearningAgentConfiguration AgentConfiguration { get; set; }
+        public AgentConfiguration AgentConfiguration { get; set; }
         public NeuralConfiguration NeuralConfiguration { get; set; }
         public BrokerConfiguration BrokerConfiguration { get; set; }
 
-        public LearningDirectorConfiguration(LearningAgentConfiguration agentSettings, NeuralConfiguration neuralSettings, BrokerConfiguration brokerSettings)
+        public AgentDirectorConfiguration(AgentConfiguration agentSettings, NeuralConfiguration neuralSettings, BrokerConfiguration brokerSettings)
         {
             AgentConfiguration = agentSettings;
             NeuralConfiguration = neuralSettings;
             BrokerConfiguration = brokerSettings;
-            ValidateSettings();      
+            ValidateSettings();
         }
 
         private bool ValidateSettings()

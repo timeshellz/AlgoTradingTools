@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Agent.Learning\AlgoTrading.Agent.Learning.csproj" />
     <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
+    <ProjectReference Include="..\DQN\AlgoTrading.DQN.csproj" />
     <ProjectReference Include="..\TradeOptimizer\NeuralNetwork\AlgoTrading.Neural.csproj" />
   </ItemGroup>
 

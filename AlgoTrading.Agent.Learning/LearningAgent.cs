@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace AlgoTrading.Agent.Learning
 {
-    public class LearningAgent : IAgent, IStatisticsProvider<LearningAgentStatistics>
+    public class LearningAgent : TradingAgent, IStatisticsProvider<LearningAgentStatistics>
     {
         public NeuralNetwork TargetNetwork { get; private set; }
-        public NeuralNetwork OnlineNetwork { get; private set; }
         public NeuralMemoryBuffer MemoryBuffer { get; private set; }
-        public IBroker Broker { get; private set; }
         public LearningAgentConfiguration Configuration { get; private set; }
 
         private List<NeuralMemory> collectedInteractionMemories { get; set; } = new List<NeuralMemory>();
@@ -22,28 +20,29 @@ namespace AlgoTrading.Agent.Learning
         private LearningAgentStatistics statistics = new LearningAgentStatistics();
 
         public LearningAgent(LearningAgentConfiguration configuration, 
-            NeuralNetwork targetNetwork, NeuralNetwork onlineNetwork, IBroker broker)
+            NeuralNetwork targetNetwork, NeuralNetwork onlineNetwork, IBroker broker) : base(onlineNetwork, broker)
         {
             Configuration = configuration;
 
             MemoryBuffer = new NeuralMemoryBuffer(Configuration.MemoryBuferSize);
             TargetNetwork = targetNetwork;
-            OnlineNetwork = onlineNetwork;
-
-            Broker = broker;
         }
 
-        public async Task<bool> Interact()
+        public override async Task<bool> Interact()
         {
             MarketState currentState = await Broker.GetNextTimestep();
             List<BrokerAction> possibleActions = Broker.GetAvailableActions();
 
             double reward = 0;
 
-            if (currentState.PreviousPosition != null && currentState.PreviousPosition is OpenPosition openPosition)
-                reward = CalculateReward(openPosition.OpeningValue, openPosition.GetCurrentValueChange(currentState.CurrentStockBar));
+            //if (currentState.PreviousPosition != null && currentState.PreviousPosition is OpenPosition openPosition)
+            //    reward = CalculateReward(openPosition.OpeningValue, 
+            //        openPosition.GetCurrentValueChange(currentState.CurrentStockBar),
+            //        openPosition.Commission);
 
-            //statistics.TotalReward += reward;
+            if (currentState.CurrentPosition != null && currentState.CurrentPosition is OpenPosition openPosition)
+                reward = CalculateReward(openPosition.OpeningValue, openPosition.GetPositionValue(currentState.CurrentStockBar));
+
             ProcessCollectedMemories(reward, currentState.ToDictionary(), possibleActions.GetActionStrings(), possibleActions.Count == 0);
 
             if (possibleActions.Count > 0)
@@ -57,44 +56,8 @@ namespace AlgoTrading.Agent.Learning
                 MemoryBuffer.Add(newMemory);
                 statistics.MemoriesCollected++;
 
-                if(action != BrokerAction.Skip && action != BrokerAction.Close)
-                {
-                    int newPositionSize = 0;
-                    switch (action)
-                    {
-                        case BrokerAction.Long25:
-                            newPositionSize =  Broker.GetLimitedPositionSize(0.25d);
-                            break;
-                        case BrokerAction.Long50:
-                            newPositionSize = Broker.GetLimitedPositionSize(0.5d);
-                            break;
-                        case BrokerAction.Long75:
-                            newPositionSize = Broker.GetLimitedPositionSize(0.75d);
-                            break;
-                        case BrokerAction.Short25:
-                            newPositionSize = -1 * Broker.GetLimitedPositionSize(0.25d);
-                            break;
-                        case BrokerAction.Short50:
-                            newPositionSize = -1 * Broker.GetLimitedPositionSize(0.5d);
-                            break;
-                        case BrokerAction.Short75:
-                            newPositionSize = -1 * Broker.GetLimitedPositionSize(0.75d);
-                            break;
-                    }
-
-                    Broker.EnterPosition(newPositionSize);
-                }
-                else
-                {
-                    switch(action)
-                    {
-                        case BrokerAction.Close:
-                            Broker.ExitPosition();
-                            break;
-                    }
-                }
+                await EmulateAction(action);
                 
-
                 statistics.RecordInteraction(reward, 1);
 
                 return true;
@@ -134,7 +97,7 @@ namespace AlgoTrading.Agent.Learning
             TargetNetwork.PasteWeights(targetActorWeights);
         }
 
-        private BrokerAction SelectActionFromState(MarketState marketState, List<BrokerAction> possibleActions)
+        protected override BrokerAction SelectActionFromState(MarketState marketState, List<BrokerAction> possibleActions)
         {
             float randomGreedy = RandomGenerator.Generate(0, 100000) / 100000;
 
@@ -148,35 +111,10 @@ namespace AlgoTrading.Agent.Learning
             }
             else
             {
-                OnlineNetwork.FillInputs(marketState.ToDictionary());
-                OnlineNetwork.ForwardFeed();
-                Dictionary<string, double> outputs = OnlineNetwork.GetOutputs();
-
-                KeyValuePair<BrokerAction, double> actionValue = GetMaxQAction(outputs, possibleActions);
-
-                action = actionValue.Key;
+                action = base.SelectActionFromState(marketState, possibleActions);
             }
 
             return action;
-        }
-
-        private KeyValuePair<BrokerAction, double> GetMaxQAction(Dictionary<string, double> actionValues, List<BrokerAction> possibleActions)
-        {
-            double maxQ = double.MinValue;
-            BrokerAction action = BrokerAction.Skip;
-
-            foreach (BrokerAction possibleAction in possibleActions)
-            {
-                string actionString = possibleAction.GetActionString();
-
-                if (actionValues[actionString] > maxQ)
-                {
-                    maxQ = actionValues[actionString];
-                    action = possibleAction;
-                }
-            }
-
-            return new KeyValuePair<BrokerAction, double>(action, maxQ);
         }
 
         private List<TrainingSample> GetTrainingSamples(List<NeuralMemory> batch)
@@ -262,7 +200,7 @@ namespace AlgoTrading.Agent.Learning
                     
                     HuberLossBackpropagationSpecification specification = new HuberLossBackpropagationSpecification(sample.Action, sample.Targets.Values.First());
 
-                    OnlineNetwork.FillInputs(sample.State.ToDictionary(k => k.Key, v => (double)v.Value), false);
+                    OnlineNetwork.FillInputs(sample.State.ToDictionary(k => k.Key, v => (double)v.Value));
                     OnlineNetwork.ForwardFeed();
                     OnlineNetwork.Backpropagate(specification);
                     OnlineNetwork.UpdateWeights();
@@ -270,21 +208,29 @@ namespace AlgoTrading.Agent.Learning
             }            
         }
 
-        private double CalculateReward(decimal positionValue, decimal equityChange)
+        private double CalculateReward(decimal positionStartValue, decimal currentPositionValue)
         {
-            //double valueCoef = Math.Tanh((rewardVariables["Cash"] + rewardVariables["Equity"] - rewardVariables["StartingCash"])
-            //   / (rewardVariables["StartingCash"]));
-            //double equityChangeCoef = Math.Tanh(rewardVariables["EquityChange"] / (0.3d * rewardVariables["StartingCash"])) + 1;
-            //double validityCoef = Math.Min(Math.Tanh(rewardVariables["Validity"] / 2) + 0.55d, 1);
-
-            double equityChangeCoef = 0;
-
-            equityChangeCoef = Math.Tanh((double)(equityChange / (0.3M * Math.Abs(positionValue))));
-
-            double reward = equityChangeCoef; //* validityCoef;
-
+            double reward = (double)((currentPositionValue - positionStartValue)/positionStartValue);
             return reward;
         }
+
+        //private double CalculateReward(decimal positionValue, decimal equityChange, decimal commisionFraction)
+        //{
+        //    //double valueCoef = Math.Tanh((rewardVariables["Cash"] + rewardVariables["Equity"] - rewardVariables["StartingCash"])
+        //    //   / (rewardVariables["StartingCash"]));
+        //    //double equityChangeCoef = Math.Tanh(rewardVariables["EquityChange"] / (0.3d * rewardVariables["StartingCash"])) + 1;
+        //    //double validityCoef = Math.Min(Math.Tanh(rewardVariables["Validity"] / 2) + 0.55d, 1);
+
+        //    double equityChangeCoef = 0;
+
+        //    //equityChangeCoef = 2 * Math.Atanh((double)((equityChange - Math.Abs(positionValue) * 2 * commisionPercentage)/ (0.3M * Math.Abs(positionValue))));
+        //    //equityChangeCoef = (double)(equityChange - Math.Abs(positionValue) * 2 * commisionFraction);
+        //    equityChangeCoef = (double)(equityChange);
+
+        //    double reward = equityChangeCoef; //* validityCoef;
+
+        //    return reward;
+        //}
 
         private void ProcessCollectedMemories(double newReward, Dictionary<string, double> newState, 
             List<string> newPossibleActions,

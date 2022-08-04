@@ -4,13 +4,14 @@
 @using TradeBubble.Components.Forms;
 @using TradeBubble.Components.Info;
 @using Syncfusion.Blazor.Charts;
+@using Syncfusion.Blazor.Grids;
 @using System.Dynamic;
 
 @using TradeBubble.ViewModels
 
 @using AlgoTrading.Stocks;
 @using AlgoTrading.Broker;
-@using AlgoTrading.DQN; 
+@using AlgoTrading.DQN;
 
 @using Syncfusion.Blazor.Popups;
 
@@ -80,14 +81,14 @@
                 TradedStockStatistics bestTradedStock = null;
 
                 if (viewModel.BestEpoch != null)
-                    bestTradedStock = viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock;
+                    bestTradedStock = viewModel.RecordBestTradedStock;
 
                 if (bestTradedStock != null)
                 {
-                    ClosedPosition firstClosedPosition = (ClosedPosition)(viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock.Positions
+                    ClosedPosition firstClosedPosition = (ClosedPosition)(bestTradedStock.Positions
                             .Where(p => p is ClosedPosition).FirstOrDefault());
 
-                    ClosedPosition lastClosedPosition = (ClosedPosition)(viewModel.BestEpoch.BrokerSessionStatistics.BestTradedStock.Positions
+                    ClosedPosition lastClosedPosition = (ClosedPosition)(bestTradedStock.Positions
                         .Where(p => p is ClosedPosition).LastOrDefault());
 
                     <div class="row">
@@ -146,6 +147,7 @@
                             <p>@bestTradedStock.Positions.Count</p>
                         </div>
                     </div>
+                    <div class="btn btn-secondary" @onclick="@(() => viewModel.IsExportingPositions = true)">Export positions</div>
                 }
                 else
                 {
@@ -160,15 +162,15 @@
 
                 if (viewModel.SkilledEpochs != null && viewModel.SkilledEpochs.Count > 0)
                 {
-                    bestTradedStock = viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock;
+                    bestTradedStock = viewModel.LastBestTradedStock;
                 }
 
                 if (bestTradedStock != null)
                 {
-                    ClosedPosition firstClosedPosition = (ClosedPosition)(viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock.Positions
+                    ClosedPosition firstClosedPosition = (ClosedPosition)(bestTradedStock.Positions
                             .Where(p => p is ClosedPosition).FirstOrDefault());
 
-                    ClosedPosition lastClosedPosition = (ClosedPosition)(viewModel.SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock.Positions
+                    ClosedPosition lastClosedPosition = (ClosedPosition)(bestTradedStock.Positions
                         .Where(p => p is ClosedPosition).LastOrDefault());
 
                     <div class="row">
@@ -454,10 +456,37 @@
     </DialogButtons>
 </SfDialog>
 
+@if (viewModel.RecordBestTradedStock != null && viewModel.RecordBestTradedStock.Positions != null)
+{
+    <SfDialog Header="Export Positions" @bind-Visible="viewModel.IsExportingPositions" IsModal="true">
+        <SfGrid ID="exportGrid" @ref="exportGrid" DataSource="viewModel.RecordBestTradedStock.Positions.Where(p => p is ClosedPosition)"
+                Toolbar="@(new List<string>() { "ExcelExport" })"
+                AllowPaging="true"
+                AllowExcelExport="true">
+            <GridEvents OnToolbarClick="ExportGridToolbarClicked" TValue="MarketPosition"></GridEvents>
+            <GridPageSettings PageSize="10" />
+            <GridColumns>
+                <GridColumn Field="@($"{nameof(ClosedPosition.StartBar)}.{nameof(StockBar.Date)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.EndBar)}.{nameof(StockBar.Date)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.Size)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.OpeningValue)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.CloseValue)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.ValueChange)}")" />
+                <GridColumn Field="@($"{nameof(ClosedPosition.CommissionedProfit)}")" />
+            </GridColumns>
+        </SfGrid>
+        <DialogButtons>
+            <DialogButton Content="Close" OnClick="@(() => viewModel.IsExportingPositions = false)" />
+        </DialogButtons>
+    </SfDialog>
+}
+
+
 @code
 {
     private List<IntervalStockIdentifier> displayedAvailableStocks = new List<IntervalStockIdentifier>();
     private SelectStocksForm form;
+    private SfGrid<MarketPosition> exportGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -470,5 +499,11 @@
                 StateHasChanged();
             });
         };
+    }
+
+    public async Task ExportGridToolbarClicked(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Id == "exportGrid_excelexport")
+            await exportGrid.ExcelExport();
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AlgoTrading.Agent
 {
-    public abstract class AgentConfiguration
+    public class AgentConfiguration
     {
         public string AgentName { get; set; } = "DefaultAgent";
     }

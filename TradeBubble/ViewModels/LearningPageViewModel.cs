@@ -4,6 +4,7 @@ using AlgoTrading.Neural;
 using AlgoTrading.Agent.Learning;
 using AlgoTrading.Stocks;
 using AlgoTrading.DQN;
+using AlgoTrading.DQN.Learning;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace TradeBubble.ViewModels
 
         private SetupState currentSetupState = SetupState.None;
         private bool isCreatingDQN = false;
+        private bool isExportingPositions = false;
 
         public Dictionary<DataInterval, List<StockIdentifier>> AvailableStocks { get; set; } = new Dictionary<DataInterval, List<StockIdentifier>>();
         public List<IntervalStockIdentifier> DisplayedStocks { get; set; } = new List<IntervalStockIdentifier>();
@@ -32,7 +34,8 @@ namespace TradeBubble.ViewModels
         public NeuralConfiguration NeuralConfiguration { get; set; }
         public BrokerConfiguration BrokerConfiguration { get; set; }
 
-        public TradedStockStatistics BestTradedStock { get; set; }
+        public TradedStockStatistics LastBestTradedStock { get; set; }
+        public TradedStockStatistics RecordBestTradedStock { get; set; }
 
 
         public bool IsConfigured { get; set; } = false || ( LearningManagerService.AreSettingsReady);
@@ -64,6 +67,17 @@ namespace TradeBubble.ViewModels
                     NeuralConfiguration = new NeuralConfiguration();
                     BrokerConfiguration = new BrokerConfiguration();
                 }    
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsExportingPositions
+        {
+            get => isExportingPositions;
+            set
+            {
+                isExportingPositions = value;
 
                 OnPropertyChanged();
             }
@@ -118,8 +132,11 @@ namespace TradeBubble.ViewModels
 
             BestEpoch = e.Statistics.BestSkilledEpoch;
 
-            if(SkilledEpochs.Count > 0)
-                BestTradedStock = SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock;
+            if (BestEpoch != null)
+                RecordBestTradedStock = BestEpoch.BrokerSessionStatistics.BestTradedStock;
+
+            if (SkilledEpochs.Count > 0)
+                LastBestTradedStock = SkilledEpochs.Last().Value.BrokerSessionStatistics.BestTradedStock;
 
             OnPropertyChanged();
         }

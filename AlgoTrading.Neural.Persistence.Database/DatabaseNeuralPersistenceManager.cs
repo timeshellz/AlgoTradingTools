@@ -62,8 +62,7 @@ namespace AlgoTrading.Neural.Persistence.Database
                 }
             }
             catch (Exception e)
-            { }
-            
+            { }           
         }
     }
 }

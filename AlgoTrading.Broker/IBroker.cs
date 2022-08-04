@@ -12,7 +12,8 @@ namespace AlgoTrading.Broker
         StockData SelectedStockData { get; }
         MarketState CurrentState { get; }
         Task Start();
-        Task<MarketState> GetNextTimestep();       
+        Task<MarketState> GetNextTimestep();
+        BrokerConfiguration Configuration { get; }
         List<BrokerAction> GetAvailableActions();
         void EnterPosition(int positionSize);
         void ExitPosition();

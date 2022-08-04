@@ -33,6 +33,11 @@ namespace TradeBubble
             services.AddServerSideBlazor();
             services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
 
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+            });
+
             services.AddInvestApiClient((_, settings) => settings.AccessToken = "t.73Y83GIQL4Z3OPBEczwyTnyfFnkQl-qfdE0YJd77R8s3ZJmNDxK_UC2eQ7ZjStSXjYC9fpIdYbO4nICbUrSapw");
 
             services.AddScoped<LearningPageViewModel>();

@@ -15,6 +15,7 @@ namespace AlgoTrading.Broker.Simulated
             var indicatorBars = new List<IndicatorBar>(stockBars.Select(e => new IndicatorBar() { Date = e.Date })).ToList();
             
             var stochResults = stockBars.GetStoch(5, 1, 3).ToDictionary(k => k.Date);
+            var rsiResults = stockBars.GetRsi().ToDictionary(k => k.Date);
             var sma200Results = stockBars.GetSma(200).ToDictionary(k => k.Date);           
             var demaResults = stockBars.GetDoubleEma(20);
             var demaRocResults = ConvertToQuotes(demaResults).GetRoc(4).ToDictionary(k => k.Date);
@@ -47,6 +48,7 @@ namespace AlgoTrading.Broker.Simulated
             {
                 e.Stochastic = stochResults[e.Date].Oscillator;
                 e.StochasticSignal = stochResults[e.Date].Signal;
+                e.RSI = rsiResults[e.Date].Rsi;
                 e.SMA200 = sma200Results[e.Date].Sma;
                 e.SMA50 = sma50ResultsDictionary[e.Date].Sma;
                 e.DEMA = demaResultsDictionary[e.Date].Dema;                
@@ -59,6 +61,7 @@ namespace AlgoTrading.Broker.Simulated
                 e.ADX = adxResults[e.Date].Adx;
                 e.AroonUp = aroonResults[e.Date].AroonUp;
                 e.AroonDown = aroonResults[e.Date].AroonDown;
+                e.ROC = rocResults[e.Date].Roc;
 
                 if (demaRocResults.ContainsKey(e.Date))
                     e.DEMAROC = demaRocResults[e.Date].Roc;
