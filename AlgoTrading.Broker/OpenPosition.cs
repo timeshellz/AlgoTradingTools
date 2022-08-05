@@ -32,12 +32,20 @@ namespace AlgoTrading.Broker
 
         public decimal GetOpenCommissionCharge()
         {
-            return OpeningValue * Commission;
+            return GetProjectedCommisionCharge(StartBar);
         }
 
         public ClosedPosition Close(StockBar closeBar)
         {
             return new ClosedPosition(StartBar, closeBar, Size, Commission);
         }
+
+        public decimal GetProjectedClosingCharge(StockBar projectedBar)
+        {
+            if (Size > 0)
+                return projectedBar.Close * Size - GetProjectedCommisionCharge(projectedBar);
+            else
+                return projectedBar.Close * Size + GetProjectedCommisionCharge(projectedBar);
+        }       
     }
 }

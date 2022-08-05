@@ -18,7 +18,7 @@ namespace AlgoTrading.Neural
 
         public double CalculateLossDerivative(double observedValue)
         {
-            return NeuralMath.HuberLossDerivative(TargetValue - observedValue);
+            return NeuralMath.HuberLossDerivative(observedValue - TargetValue);
         }
     }
 }

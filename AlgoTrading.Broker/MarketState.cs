@@ -123,12 +123,13 @@ namespace AlgoTrading.Broker
             {
                 openPosition = null;
 
-                if (newMarketState.CurrentPosition != null)
-                    return false;
-
                 openPosition = position.Open(newMarketState.CurrentStockBar);
 
-                if (newMarketState.Cash - openPosition.GetOpenCommissionCharge() < 0)
+                if ((newMarketState.CurrentPosition == null || (newMarketState.CurrentPosition != null && newMarketState.CurrentPosition is ClosedPosition))
+                    && newMarketState.Cash - openPosition.GetTotalOpenCharge() < 0)
+                    return false;
+                else if (newMarketState.CurrentPosition != null && newMarketState.CurrentPosition is OpenPosition currentPosition && !(newMarketState.CurrentPosition is ClosedPosition) 
+                    && newMarketState.Cash + currentPosition.GetProjectedClosingCharge(newMarketState.CurrentStockBar) - openPosition.GetTotalOpenCharge() < 0)
                     return false;
 
                 return true;

@@ -20,7 +20,10 @@ namespace AlgoTrading.Broker
             CloseValue = endBar.Close * Size;
             ValueChange = EndBar.Close * Size - OpeningValue;
 
-            CommissionedProfit = GetTotalClosingCharge() - GetTotalOpenCharge();
+            var openCharge = GetTotalOpenCharge();
+            var closingCharge = GetTotalClosingCharge();
+
+            CommissionedProfit = closingCharge - openCharge;
         }
 
         public TimeSpan GetPositionDuration()
@@ -30,15 +33,12 @@ namespace AlgoTrading.Broker
 
         public decimal GetTotalClosingCharge()
         {
-            if(Size > 0)
-                return CloseValue - GetClosingCommissionCharge();
-            else
-                return CloseValue + GetClosingCommissionCharge();
+            return GetProjectedClosingCharge(EndBar);
         }
 
         public decimal GetClosingCommissionCharge()
         {
-            return CloseValue * Commission;
+            return GetProjectedCommisionCharge(EndBar);
         }
     }
 }

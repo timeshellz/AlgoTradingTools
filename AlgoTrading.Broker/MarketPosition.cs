@@ -27,6 +27,11 @@ namespace AlgoTrading.Broker
             return 0;
         }
 
+        public decimal GetProjectedCommisionCharge(StockBar projectionBar)
+        {
+            return projectionBar.Close * Size * Commission;
+        }
+
         public OpenPosition Open(StockBar startBar)
         {
             return new OpenPosition(startBar, Size, Commission);

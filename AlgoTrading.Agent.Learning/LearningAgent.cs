@@ -123,13 +123,14 @@ namespace AlgoTrading.Agent.Learning
 
             foreach (NeuralMemory memory in batch)
             {
+                if (memory.States.Count != Configuration.MemorySteps)
+                    continue;
+
                 Dictionary<int, double> targets = new Dictionary<int, double>();
-                Dictionary<int, double> finalProbabilities = new Dictionary<int, double>();
 
                 targets.Add(0, 0);
 
                 double cumulativeRewards = 0;
-                double estimatedTarget = 0;
 
                 for (int i = memory.States.Count - 2; i >= 0; i--)
                 {                   

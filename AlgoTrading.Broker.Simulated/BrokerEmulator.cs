@@ -95,7 +95,15 @@ namespace AlgoTrading.Broker.Simulated
         public void EnterPosition(int positionSize)
         {
             if (nextStateBuilder != null)
+            {
+                bool inPosition;
+                nextStateBuilder.CanExitPosition(out inPosition);
+
+                if (inPosition)
+                    ExitPosition();
+
                 nextStateBuilder.EnterNewPosition(new MarketPosition(positionSize, Configuration.Commission));
+            }               
         }
 
         public void ExitPosition()
