@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Stocks;
+﻿using AlgoTrading.Stocks;
+using System;
 
-namespace AlgoTrading.Broker
+namespace AlgoTrading.Broker.Positions
 {
     public class ClosedPosition : OpenPosition
     {

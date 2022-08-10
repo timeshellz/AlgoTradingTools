@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Stocks;
+﻿using AlgoTrading.Stocks;
 
-namespace AlgoTrading.Broker
+namespace AlgoTrading.Broker.Positions
 {
     public class OpenPosition : MarketPosition
     {
-        public StockBar StartBar { get;  }
+        public StockBar StartBar { get; }
 
         public decimal OpeningValue { get; }
 
@@ -24,7 +21,7 @@ namespace AlgoTrading.Broker
 
         public decimal GetTotalOpenCharge()
         {
-            if(Size > 0)
+            if (Size > 0)
                 return OpeningValue + GetOpenCommissionCharge();
             else
                 return OpeningValue - GetOpenCommissionCharge();
@@ -46,6 +43,6 @@ namespace AlgoTrading.Broker
                 return projectedBar.Close * Size - GetProjectedCommisionCharge(projectedBar);
             else
                 return projectedBar.Close * Size + GetProjectedCommisionCharge(projectedBar);
-        }       
+        }
     }
 }

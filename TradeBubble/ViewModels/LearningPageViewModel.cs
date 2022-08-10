@@ -1,12 +1,13 @@
-﻿using System;
+﻿using AlgoTrading.Agent.Learning;
 using AlgoTrading.Broker;
-using AlgoTrading.Neural;
-using AlgoTrading.Agent.Learning;
-using AlgoTrading.Stocks;
-using AlgoTrading.DQN;
+using AlgoTrading.Broker.Statistics;
 using AlgoTrading.DQN.Learning;
+using AlgoTrading.DQN.Statistics;
+using AlgoTrading.Neural;
+using AlgoTrading.Stocks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 using System.Threading.Tasks;
 using TradeBubble.Services;
 
@@ -16,19 +17,21 @@ namespace TradeBubble.ViewModels
     {
         private LearningManagerService learningManager;
 
+        private Timer refreshTimer;
+
         private SetupState currentSetupState = SetupState.None;
         private bool isCreatingDQN = false;
         private bool isExportingPositions = false;
 
         public Dictionary<DataInterval, List<StockIdentifier>> AvailableStocks { get; set; } = new Dictionary<DataInterval, List<StockIdentifier>>();
-        public List<IntervalStockIdentifier> DisplayedStocks { get; set; } = new List<IntervalStockIdentifier>();
-        public List<IntervalStockIdentifier> SelectedStocks { get; set; } = new List<IntervalStockIdentifier>();
+        public List<StockIdentifier> DisplayedStocks { get; set; } = new List<StockIdentifier>();
+        public List<StockIdentifier> SelectedStocks { get; set; } = new List<StockIdentifier>();
 
         public Dictionary<int, EpochStatistics> LearningEpochs { get; set; } = new Dictionary<int, EpochStatistics>();
         public Dictionary<int, EpochStatistics> SkilledEpochs { get; set; } = new Dictionary<int, EpochStatistics>();
         public EpochStatistics BestEpoch { get; set; }
 
-        public enum SetupState { LoadSaved, CreateNew, SelectStocks, None };        
+        public enum SetupState { LoadSaved, CreateNew, SelectStocks, None };
 
         public LearningAgentConfiguration AgentConfiguration { get; set; }
         public NeuralConfiguration NeuralConfiguration { get; set; }
@@ -38,9 +41,9 @@ namespace TradeBubble.ViewModels
         public TradedStockStatistics RecordBestTradedStock { get; set; }
 
 
-        public bool IsConfigured { get; set; } = false || ( LearningManagerService.AreSettingsReady);
-       
-        public SetupState CurrentSetupState 
+        public bool IsConfigured { get; set; } = false || (LearningManagerService.AreSettingsReady);
+
+        public SetupState CurrentSetupState
         {
             get => currentSetupState;
             private set
@@ -50,7 +53,7 @@ namespace TradeBubble.ViewModels
                 if (currentSetupState == SetupState.SelectStocks)
                     StockDataService.FetchSavedStocks();
             }
-        }             
+        }
 
         public bool IsCreatingDQN
         {
@@ -59,14 +62,14 @@ namespace TradeBubble.ViewModels
             {
                 isCreatingDQN = value;
 
-                if(value)
+                if (value)
                 {
                     CurrentSetupState = SetupState.CreateNew;
 
                     AgentConfiguration = new LearningAgentConfiguration();
                     NeuralConfiguration = new NeuralConfiguration();
                     BrokerConfiguration = new BrokerConfiguration();
-                }    
+                }
 
                 OnPropertyChanged();
             }
@@ -86,14 +89,15 @@ namespace TradeBubble.ViewModels
         public LearningPageViewModel(LearningManagerService learningManagerService)
         {
             learningManager = learningManagerService;
+            refreshTimer = new Timer(5000);
         }
 
-        public bool IsLearningRunning 
+        public bool IsLearningRunning
         {
             get
             {
                 return !LearningManagerService.IsPaused;
-            } 
+            }
             set
             {
                 LearningManagerService.IsPaused = !value;
@@ -106,7 +110,7 @@ namespace TradeBubble.ViewModels
         {
             IsLearningRunning = !LearningManagerService.IsPaused;
             StockDataService.StockDataFetched += StockDataFetched;
-            LearningManagerService.StatisticsUpdated += StatisticsUpdated;
+            //LearningManagerService.StatisticsUpdated += StatisticsUpdated;
         }
 
         private void StockDataFetched(object sender, StockDataFetchedEventArgs e)
@@ -118,8 +122,7 @@ namespace TradeBubble.ViewModels
 
                 AvailableStocks[e.Interval] = e.StockIdentifiers;
 
-                DisplayedStocks = AvailableStocks
-                    .SelectMany(e => e.Value.Select(v => new IntervalStockIdentifier(e.Key, v))).ToList();
+                DisplayedStocks = AvailableStocks.SelectMany(e => e.Value).ToList();
             }
 
             OnPropertyChanged();
@@ -127,8 +130,8 @@ namespace TradeBubble.ViewModels
 
         private void StatisticsUpdated(object sender, LearningStatisticsUpdatedEventArgs e)
         {
-            LearningEpochs = e.Statistics.LearningEpochs.ToDictionary(k => k.EpochID);
-            SkilledEpochs = e.Statistics.SkilledEpochs.ToDictionary(k => k.EpochID);
+            LearningEpochs = e.Statistics.LearningEpochs.ToDictionary(k => k.EpochOrder);
+            SkilledEpochs = e.Statistics.SkilledEpochs.ToDictionary(k => k.EpochOrder);
 
             BestEpoch = e.Statistics.BestSkilledEpoch;
 
@@ -156,7 +159,7 @@ namespace TradeBubble.ViewModels
         {
             if (CurrentSetupState == SetupState.CreateNew)
                 CurrentSetupState = SetupState.SelectStocks;
-            else if(CurrentSetupState != SetupState.None)
+            else if (CurrentSetupState != SetupState.None)
                 ConfirmSetup();
         }
 
@@ -173,7 +176,7 @@ namespace TradeBubble.ViewModels
                 AgentConfiguration = null;
                 BrokerConfiguration = null;
                 NeuralConfiguration = null;
-            }               
+            }
             else
                 CurrentSetupState = SetupState.CreateNew;
         }
@@ -188,5 +191,5 @@ namespace TradeBubble.ViewModels
             else
                 IsLearningRunning = true;
         }
-    }   
+    }
 }

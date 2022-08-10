@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AlgoTrading.Statistics
+﻿namespace AlgoTrading.Statistics
 {
     public interface IStatistics
     {

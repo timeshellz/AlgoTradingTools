@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Stocks;
+﻿using System.Collections.Generic;
 
 namespace AlgoTrading.DQN.Benchmarking
 {
     class BenchmarkCategory
     {
         public string Name { get; set; }
-        public List<IntervalStockIdentifier> Stocks { get; set; }
+        //public List<StockIdentifier> Stocks { get; set; }
     }
 }

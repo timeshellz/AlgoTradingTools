@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Google.Protobuf.WellKnownTypes;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
-using AlgoTrading.Stocks;
+using System.Timers;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using System.Linq;
-using System.Timers;
 
 namespace AlgoTrading.Stocks.Tinkoff
 {
@@ -28,23 +25,23 @@ namespace AlgoTrading.Stocks.Tinkoff
             minuteTimer.Start();
         }
 
-        public async Task<StockData> GetStock(StockIdentifier stockName, DataInterval interval, DateTime beginning, DateTime end)
+        public async Task<StockData> GetStock(StockIdentifier stockName, DateTime beginning, DateTime end)
         {
             var share = await client.Instruments
                     .ShareByAsync(new InstrumentRequest() { Id = stockName.FIGI, IdType = InstrumentIdType.Figi });
 
             int limit = (await client.Users.GetUserTariffAsync()).UnaryLimits.First(e => e.Methods.Any(m => m.Contains("GetCandles"))).LimitPerMinute;
 
-            var stockDataBuilder = StockData.GetBuilder().SetIdentifier(stockName).SetInterval(interval);
+            var stockDataBuilder = StockData.GetBuilder().SetIdentifier(stockName);
             var downloadedBars = new SortedList<DateTime, StockBar>();
 
-            DateTimeOffset spanEnd = DateTime.Now.ToUniversalTime();           
+            DateTimeOffset spanEnd = DateTime.Now.ToUniversalTime();
 
             bool isDataOver = false;
 
             while (!isDataOver)
             {
-                DateTimeOffset spanStart = spanEnd - GetMaxTimeSpan(interval);
+                DateTimeOffset spanStart = spanEnd - GetMaxTimeSpan(stockName.Interval);
 
                 var shareBars = await client.MarketData
                 .GetCandlesAsync(new GetCandlesRequest()
@@ -52,7 +49,7 @@ namespace AlgoTrading.Stocks.Tinkoff
                     Figi = stockName.FIGI,
                     From = new Timestamp() { Seconds = spanStart.ToUnixTimeSeconds(), Nanos = 0 },
                     To = new Timestamp() { Seconds = spanEnd.ToUnixTimeSeconds(), Nanos = 0 },
-                    Interval = interval.ToCandleInterval()
+                    Interval = stockName.Interval.ToCandleInterval()
                 });
 
                 marketDataRequestCount++;
@@ -60,18 +57,17 @@ namespace AlgoTrading.Stocks.Tinkoff
                 spanEnd = spanStart;
 
                 if (!shareBars.Candles.All(e => e != null && e.Time != null) || shareBars.Candles.Count == 0)
-                {
                     isDataOver = true;
-                    break;
-                }
-
-                foreach (var stockBar in shareBars.Candles.Select(c => new StockBar(c.Time.ToDateTime(), c.Open, c.Close, c.High, c.Low, c.Volume)))
+                else
                 {
-                    if(!downloadedBars.ContainsKey(stockBar.Date))
-                        downloadedBars.Add(stockBar.Date, stockBar);
-                }
+                    foreach (var stockBar in shareBars.Candles.Select(c => new StockBar(c.Time.ToDateTime(), c.Open, c.Close, c.High, c.Low, c.Volume)))
+                    {
+                        if (!downloadedBars.ContainsKey(stockBar.Date))
+                            downloadedBars.Add(stockBar.Date, stockBar);
+                    }
+                }               
 
-                while(marketDataRequestCount >= 95)
+                while (marketDataRequestCount >= limit)
                     await Task.Delay(500);
             }
 
@@ -86,7 +82,7 @@ namespace AlgoTrading.Stocks.Tinkoff
 
             foreach (var share in shares.Instruments)
             {
-                result.Add(new StockIdentifier(share.Name, share.Figi, share.Currency, share.Sector, share.CountryOfRisk));
+                result.Add(new StockIdentifier(share.Name, share.Figi, share.Currency, share.Sector, share.CountryOfRisk, DataInterval.Any));
             }
 
             return result;
@@ -98,8 +94,8 @@ namespace AlgoTrading.Stocks.Tinkoff
             {
                 case DataInterval.Minute:
                 case DataInterval.FiveMinute:
-                case DataInterval.FifteenMinute:                   
-                    return new TimeSpan(1, 0, 0, 0);
+                case DataInterval.FifteenMinute:
+                    return new TimeSpan(0, 23, 59, 59);
                 case DataInterval.Hour:
                     return new TimeSpan(7, 0, 0, 0);
                 case DataInterval.Day:
@@ -120,6 +116,6 @@ namespace AlgoTrading.Stocks.Tinkoff
             output.Add("Day", DataInterval.Day);
 
             return output;
-        }       
-    }    
+        }
+    }
 }

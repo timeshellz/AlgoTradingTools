@@ -1,34 +1,32 @@
-﻿using AlgoTrading.DQN;
-using AlgoTrading.DQN.Learning;
-using AlgoTrading.Neural;
-using AlgoTrading.Neural.Persistence;
-using AlgoTrading.Agent.Learning;
-using AlgoTrading.Stocks;
-using AlgoTrading.Stocks.Persistence;
+﻿using AlgoTrading.Agent.Learning;
 using AlgoTrading.Broker;
 using AlgoTrading.Broker.Simulated;
-using System;
-using System.Collections.Generic;
+using AlgoTrading.DQN.Learning;
+using AlgoTrading.DQN.Statistics;
+using AlgoTrading.DQN.Statistics.Persistence;
+using AlgoTrading.Neural;
+using AlgoTrading.Neural.Persistence;
+using AlgoTrading.Stocks;
+using AlgoTrading.Stocks.Persistence;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace TradeBubble.Services
 {
     public class LearningManagerService : BackgroundService
     {
-        public static event EventHandler<LearningStatisticsUpdatedEventArgs> StatisticsUpdated;
-
         public static LearningDirectorConfiguration DirectorConfiguration { get; set; }
 
         public static bool AreSettingsReady { get; set; } = false;
 
-        public static bool IsPaused 
-        { 
-            get => isPaused; 
+        public static bool IsPaused
+        {
+            get => isPaused;
             set
-            {               
+            {
                 if (director != null)
                 {
                     //if (isPaused)
@@ -37,7 +35,7 @@ namespace TradeBubble.Services
                     //    controller.ControllerPauseEvent.Reset();
 
                     isPaused = value;
-                }                  
+                }
             }
         }
 
@@ -62,7 +60,7 @@ namespace TradeBubble.Services
 
         private async Task RunDQNSetup()
         {
-            while(director == null)
+            while (director == null)
             {
                 try
                 {
@@ -77,7 +75,7 @@ namespace TradeBubble.Services
                     AreSettingsReady = false;
                     //log error message
                 }
-            }           
+            }
         }
 
         private async Task CreateLearningDirector()
@@ -91,7 +89,7 @@ namespace TradeBubble.Services
                 (IIndicatorProvider)serviceProvider.GetService(typeof(IIndicatorProvider)));
 
             await broker.Start();
-           
+
             NeuralNetwork onlineNetwork = new NeuralNetwork("test", DirectorConfiguration.NeuralConfiguration);
             NeuralNetwork targetNetwork = new NeuralNetwork("targetTest", DirectorConfiguration.NeuralConfiguration);
             targetNetwork.PasteWeights(onlineNetwork.CopyWeights());
@@ -99,19 +97,19 @@ namespace TradeBubble.Services
             LearningAgent agent = new LearningAgent(DirectorConfiguration.AgentConfiguration,
                 targetNetwork, onlineNetwork, broker);
 
-            director = new LearningAgentDirector(agent);
+            director = new LearningAgentDirector(agent, (ILearningStatisticsPersistenceManager)serviceProvider.GetService(typeof(ILearningStatisticsPersistenceManager)));
         }
 
         private async Task RunDirector()
         {
             int trainingEpochsElapsed = 0;
 
-            while(true)
+            while (true)
             {
                 while (IsPaused)
                     await Task.Delay(100);
 
-                if(trainingEpochsElapsed != 5)
+                if (trainingEpochsElapsed != 5)
                 {
                     await director.DirectLearningEpoch();
                     trainingEpochsElapsed++;
@@ -127,10 +125,8 @@ namespace TradeBubble.Services
                     if (director.GetStatistics().BestSkilledEpoch != bestResult)
                         await SaveNetwork(director.Agent.OnlineNetwork);
                 }
-
-                StatisticsUpdated?.Invoke(this, new LearningStatisticsUpdatedEventArgs(director.GetStatistics()));
             }
-            
+
         }
 
         private async Task SaveNetwork(NeuralNetwork network)
@@ -138,6 +134,11 @@ namespace TradeBubble.Services
             INeuralPersistenceManager persistenceManager = (INeuralPersistenceManager)serviceProvider.GetService(typeof(INeuralPersistenceManager));
 
             await persistenceManager.SaveNeuralNetwork(network);
+        }
+
+        private async Task SaveStatistics(LearningDirectorStatistics statistics)
+        {
+
         }
     }
 

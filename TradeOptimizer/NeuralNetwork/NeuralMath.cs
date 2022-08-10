@@ -1,15 +1,17 @@
-﻿using System;
+﻿using MathNet.Numerics.Differentiation;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using MathNet.Numerics.Differentiation;
 
 
 namespace AlgoTrading.Neural
 {
     public static class NeuralMath
     {
-        public enum LossType { Huber, Actor}
+        public enum LossType { Huber, Actor }
+
+        private static double seluAlpha = 1.6732632423543772848170429916717;
+        private static double seluLambda = 1.0507009873554804934193349852946;
 
         public static double GELU(double z)
         {
@@ -25,6 +27,26 @@ namespace AlgoTrading.Neural
         {
             return 0.5d * Math.Tanh(0.0356774 * Math.Pow(z, 3) + 0.797885 * z) + (0.0535161 * Math.Pow(z, 3) + 0.398942 * z) *
                 Math.Pow(1d / Math.Cosh(0.0356774 * Math.Pow(z, 3) + 0.797885 * z), 2) + 0.5d;
+        }
+
+        public static double SELU(double z)
+        {
+            double multiplicator = z;
+
+            if (z <= 0)
+                multiplicator = seluAlpha * Math.Pow(Math.E, z) - seluAlpha;
+
+            return seluLambda * multiplicator;
+        }
+
+        public static double SELUDerivative(double z)
+        {
+            double multiplicator = 1;
+
+            if (z <= 0)
+                multiplicator = seluAlpha * Math.Pow(Math.E, z);
+
+            return seluLambda * multiplicator;
         }
 
         public static double HuberLoss(double temporalDifference)
@@ -63,7 +85,7 @@ namespace AlgoTrading.Neural
 
         public static double CrossEntropyDerivative(double targetProbability, double estimatedProbability)
         {
-             //Func<double, double> crossEntropy = x => CrossEntropyLoss(x, targetProbability);
+            //Func<double, double> crossEntropy = x => CrossEntropyLoss(x, targetProbability);
 
             //var deriv = new NumericalDerivative(3, 1);
             //double test = deriv.EvaluateDerivative(crossEntropy, estimatedProbability, 1);
@@ -120,33 +142,42 @@ namespace AlgoTrading.Neural
         {
             var output = new Dictionary<string, double>(input);
 
-            double mean = 0;
-            double variance = 0;
-
-            int count = output.Values.Count;
-
-            foreach (double value in output.Values)
-            {
-                mean += value;
-            }
-
-            mean /= count;
-
-            foreach (double value in output.Values)
-            {
-                variance += Math.Pow(value - mean, 2);
-            }
-
-            variance = Math.Sqrt(variance/count);
-
             for (int i = 0; i < output.Values.Count; i++)
             {
                 var element = output.ElementAt(i);
                 output.Remove(element.Key);
-                output.Add(element.Key, (element.Value - mean) / variance);
+                output.Add(element.Key, element.Value / 1000);
             }
 
             return output;
+
+            //double mean = 0;
+            //double variance = 0;
+
+            //int count = output.Values.Count;
+
+            //foreach (double value in output.Values)
+            //{
+            //    mean += value;
+            //}
+
+            //mean /= count;
+
+            //foreach (double value in output.Values)
+            //{
+            //    variance += Math.Pow(value - mean, 2);
+            //}
+
+            //variance = Math.Sqrt(variance/count);
+
+            //for (int i = 0; i < output.Values.Count; i++)
+            //{
+            //    var element = output.ElementAt(i);
+            //    output.Remove(element.Key);
+            //    output.Add(element.Key, (element.Value - mean) / variance);
+            //}
+
+            //return output;
         }
     }
 }

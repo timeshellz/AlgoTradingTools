@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using AlgoTrading.Broker;
 using AlgoTrading.Neural;
-using AlgoTrading.Broker;
+using System.Threading.Tasks;
 
 namespace AlgoTrading.Agent
 {
@@ -9,6 +8,6 @@ namespace AlgoTrading.Agent
     {
         IBroker Broker { get; }
         NeuralNetwork OnlineNetwork { get; }
-        Task<bool> Interact();     
+        Task<bool> Interact();
     }
 }

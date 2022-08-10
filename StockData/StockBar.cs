@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Skender.Stock.Indicators;
+﻿using Skender.Stock.Indicators;
+using System;
 
 namespace AlgoTrading.Stocks
 {

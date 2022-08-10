@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 using AlgoTrading.Stocks;
 
-namespace AlgoTrading.Broker
+namespace AlgoTrading.Broker.Positions
 {
     public class MarketPosition
     {
@@ -15,7 +12,7 @@ namespace AlgoTrading.Broker
         {
             Size = size;
             Commission = commission;
-        }       
+        }
 
         public virtual decimal GetPositionValue(StockBar currentBar)
         {

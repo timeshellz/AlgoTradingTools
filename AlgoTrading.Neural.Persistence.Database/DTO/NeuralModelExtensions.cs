@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace AlgoTrading.Neural.Persistence.Database.DTO
@@ -18,11 +16,11 @@ namespace AlgoTrading.Neural.Persistence.Database.DTO
             var nodeList = network.Nodes.SelectMany(kv => kv.Value).ToList();
             var nodeDTOList = nodeList.Select(n => n.GetDTO()).ToList();
 
-            for(int i = 0; i < nodeList.Count; i++)
+            for (int i = 0; i < nodeList.Count; i++)
             {
                 foreach (var connectionId in nodeList[i].Connections.Select(c => c.ID))
                 {
-                    if(!connectionDTOs.ContainsKey(connectionId))
+                    if (!connectionDTOs.ContainsKey(connectionId))
                         connectionDTOs.Add(connectionId, connections[connectionId].GetDTO());
 
                     if (connections[connectionId].InputNode == nodeList[i])
@@ -45,7 +43,7 @@ namespace AlgoTrading.Neural.Persistence.Database.DTO
 
         public static NeuralNetworkDTO PasteConnectionWeights(this NeuralNetworkDTO neuralNetworkDTO1, List<NodeConnectionDTO> connectionDTOs2)
         {
-            for(int i = 0; i < neuralNetworkDTO1.Connections.Count; i++)
+            for (int i = 0; i < neuralNetworkDTO1.Connections.Count; i++)
             {
                 neuralNetworkDTO1.Connections[i].Weight = connectionDTOs2[i].Weight;
             }

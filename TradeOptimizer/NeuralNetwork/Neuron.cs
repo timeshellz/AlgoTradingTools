@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using MathNet.Numerics;
-using Newtonsoft.Json;
-using MathNet.Numerics.Distributions;
+﻿using System.Linq;
 
 namespace AlgoTrading.Neural
 {
     public abstract class Neuron : Node, ILinearActivatable, IGeluActivatable
-    {              
+    {
         public double Delta { get; set; }
         public double WeightedInputSum { get; set; }
         public double InnerActivationDerivative { get; set; }
@@ -37,17 +31,22 @@ namespace AlgoTrading.Neural
         {
             WeightedInputSum = GetWeightedInputSum();
 
-            if(Activation == NeuralConfiguration.ActivationType.Gelu)
+            if (Activation == NeuralConfiguration.ActivationType.Gelu)
             {
                 Value = NeuralMath.GELU(WeightedInputSum);
                 //InnerActivationDerivative = Differentiate.FirstPartialDerivative(NeuralMath.GELU, new double[] { Value }, 0);
                 InnerActivationDerivative = NeuralMath.GELUDerivative(WeightedInputSum);
             }
-            else if(Activation == NeuralConfiguration.ActivationType.Linear)
+            else if (Activation == NeuralConfiguration.ActivationType.Linear)
             {
                 Value = WeightedInputSum;
                 InnerActivationDerivative = 1;
-            }                       
+            }
+            else if (Activation == NeuralConfiguration.ActivationType.Selu)
+            {
+                Value = NeuralMath.SELU(WeightedInputSum);
+                InnerActivationDerivative = NeuralMath.SELUDerivative(WeightedInputSum);
+            }
         }
     }
 }

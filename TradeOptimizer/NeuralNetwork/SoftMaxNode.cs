@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-namespace AlgoTrading.Neural
+﻿namespace AlgoTrading.Neural
 {
     public class SoftMaxNode : Node, ISoftMaxActivatable
     {

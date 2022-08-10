@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AlgoTrading.Stocks;
 
 namespace AlgoTrading.Stocks.Persistence.Database
 {
@@ -23,11 +20,11 @@ namespace AlgoTrading.Stocks.Persistence.Database
 
         public static StockBar GetModel(this StockBarDTO stockBarDTO)
         {
-            return new StockBar(stockBarDTO.Date, 
-                stockBarDTO.Open, 
-                stockBarDTO.Close, 
-                stockBarDTO.High, 
-                stockBarDTO.Low, 
+            return new StockBar(stockBarDTO.Date,
+                stockBarDTO.Open,
+                stockBarDTO.Close,
+                stockBarDTO.High,
+                stockBarDTO.Low,
                 stockBarDTO.Volume);
         }
 
@@ -40,7 +37,6 @@ namespace AlgoTrading.Stocks.Persistence.Database
                 Info = stockData.Identifier.GetDTO(),
                 StartDate = stockData.StartDate,
                 EndDate = stockData.EndDate,
-                Interval = stockData.Interval.GetTimeSpan()
             };
         }
 
@@ -50,7 +46,6 @@ namespace AlgoTrading.Stocks.Persistence.Database
 
             return StockData.GetBuilder()
                 .SetIdentifier(stockDataDTO.Info.GetModel())
-                .SetInterval(stockDataDTO.Interval.GetInterval())
                 .SetBars(bars.Select(b => b.GetModel()).ToList())
                 .Build();
         }
@@ -64,16 +59,18 @@ namespace AlgoTrading.Stocks.Persistence.Database
                 FIGI = stockIdentifier.FIGI,
                 Name = stockIdentifier.Name,
                 Sector = stockIdentifier.Name,
+                Interval = stockIdentifier.Interval.GetTimeSpan()
             };
         }
 
         public static StockIdentifier GetModel(this StockInfoDTO stockInfoDTO)
         {
-            return new StockIdentifier(stockInfoDTO.Name, 
-                stockInfoDTO.FIGI, 
-                stockInfoDTO.Currency, 
-                stockInfoDTO.Sector, 
-                stockInfoDTO.Country);
+            return new StockIdentifier(stockInfoDTO.Name,
+                stockInfoDTO.FIGI,
+                stockInfoDTO.Currency,
+                stockInfoDTO.Sector,
+                stockInfoDTO.Country,
+                stockInfoDTO.Interval.GetInterval());
         }
     }
 }

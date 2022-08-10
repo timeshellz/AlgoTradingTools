@@ -1,11 +1,8 @@
-﻿using System;
+﻿using AlgoTrading.Stocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading.Channels;
-using Tinkoff.InvestApi;
-using AlgoTrading.Stocks;
-using AlgoTrading.Stocks.Tinkoff;
 using TradeBubble.Services;
 
 namespace TradeBubble.ViewModels
@@ -13,9 +10,9 @@ namespace TradeBubble.ViewModels
     public class StockManagementViewModel : PageViewModel
     {
         public Dictionary<string, StockIdentifier> AllStocks { get; set; } = new Dictionary<string, StockIdentifier>();
-        public Dictionary<string, StockIdentifier> AvailableStocks { get; set; } = new Dictionary<string, StockIdentifier>();      
+        public Dictionary<string, StockIdentifier> AvailableStocks { get; set; } = new Dictionary<string, StockIdentifier>();
         public Dictionary<string, StockIdentifier> SelectedStocks { get; set; } = new Dictionary<string, StockIdentifier>();
-        public Dictionary<string, StockIdentifier> SavedStocks { get; set; }  = new Dictionary<string, StockIdentifier>();
+        public Dictionary<string, StockIdentifier> SavedStocks { get; set; } = new Dictionary<string, StockIdentifier>();
 
         public List<DataInterval> AvailableIntervals { get; set; } = new List<DataInterval>();
 
@@ -49,10 +46,10 @@ namespace TradeBubble.ViewModels
                 OnPropertyChanged();
             }
         }
-        
-        public int RemainingDownloads 
-        { 
-            get => remainingDownloads; 
+
+        public int RemainingDownloads
+        {
+            get => remainingDownloads;
             private set
             {
                 remainingDownloads = value;
@@ -71,7 +68,7 @@ namespace TradeBubble.ViewModels
             StockDataService.StockDataFetched += StockDataFetched;
 
             StockDataService.FetchAvailableStocks();
-            StockDataService.FetchSavedStocks(SelectedInterval);                  
+            StockDataService.FetchSavedStocks(SelectedInterval);
         }
 
         private void StockDataLoaded(object sender, StockDataLoadedEventArgs e)
@@ -82,7 +79,7 @@ namespace TradeBubble.ViewModels
                 StockDataService.FetchSavedStocks(SelectedInterval);
             }
 
-            if(e.Type == DataType.Saved && e.IsSuccessful && e.StockData.Interval == SelectedInterval)
+            if (e.Type == DataType.Saved && e.IsSuccessful && e.StockData.Identifier.Interval == SelectedInterval)
                 DisplayedStockData = e.StockData;
             else if (!e.IsSuccessful)
                 IsDisplayingStockData = false;
@@ -111,15 +108,18 @@ namespace TradeBubble.ViewModels
 
         public void DownloadSelectedStocks()
         {
+            foreach (var stock in SelectedStocks.Values)
+                stock.Interval = SelectedInterval;
+
             RemainingDownloads += SelectedStocks.Count;
-            StockDataService.DownloadStocks(SelectedStocks.Values.ToList(), SelectedInterval, DateTime.Now, DateTime.Now);
+            StockDataService.DownloadStocks(SelectedStocks.Values.ToList(), DateTime.Now, DateTime.Now);
 
             DeselectAllStocks();
         }
 
         public void SelectAllStocks()
         {
-            foreach(var stock in AvailableStocks)
+            foreach (var stock in AvailableStocks)
             {
                 SelectStock(stock.Value);
             }
@@ -152,7 +152,7 @@ namespace TradeBubble.ViewModels
         public void DisplayStock(StockIdentifier stock)
         {
             IsDisplayingStockData = true;
-            StockDataService.GetSavedStockData(new IntervalStockIdentifier(SelectedInterval, stock));
+            StockDataService.GetSavedStockData(stock);
         }
 
         public void CloseDisplayedStock()

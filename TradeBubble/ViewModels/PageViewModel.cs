@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace TradeBubble.ViewModels
 {
@@ -21,7 +18,7 @@ namespace TradeBubble.ViewModels
             catch
             {
                 throw;
-            }        
+            }
         }
 
         protected abstract Task LoadData();

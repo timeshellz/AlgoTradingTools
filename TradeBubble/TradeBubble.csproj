@@ -13,16 +13,21 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
     <PackageReference Include="Syncfusion.Blazor" Version="20.1.0.50" />
-    <PackageReference Include="Tinkoff.InvestApi" Version="0.1.5" />
+    <PackageReference Include="Tinkoff.InvestApi" Version="0.1.6" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Agent.Statistics\AlgoTrading.Agent.Statistics.csproj" />
     <ProjectReference Include="..\AlgoTrading.Broker.Simulated\AlgoTrading.Broker.Simulated.csproj" />
     <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
     <ProjectReference Include="..\AlgoTrading.DQN.Benchmarking\AlgoTrading.DQN.Benchmarking.csproj" />
+    <ProjectReference Include="..\AlgoTrading.DQN.Learning.Statistics.Persistence\AlgoTrading.DQN.Statistics.Persistence.csproj" />
     <ProjectReference Include="..\AlgoTrading.DQN.Learning\AlgoTrading.DQN.Learning.csproj" />
+    <ProjectReference Include="..\AlgoTrading.DQN.Statistics.Persistence.Database\AlgoTrading.DQN.Statistics.Persistence.Database.csproj" />
+    <ProjectReference Include="..\AlgoTrading.DQN.Statistics\AlgoTrading.DQN.Statistics.csproj" />
     <ProjectReference Include="..\AlgoTrading.Neural.Persistence.Database\AlgoTrading.Neural.Persistence.Database.csproj" />
     <ProjectReference Include="..\AlgoTrading.Neural.Persistence\AlgoTrading.Neural.Persistence.csproj" />
+    <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Persistence.Database\AlgoTrading.Stocks.Persistence.Database.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Persistence\AlgoTrading.Stocks.Persistence.csproj" />
     <ProjectReference Include="..\AlgoTrading.Stocks.Tinkoff\AlgoTrading.Stocks.Tinkoff.csproj" />

@@ -61,11 +61,25 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.Neural.Persiste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.Neural.Persistence.Database", "AlgoTrading.Neural.Persistence.Database\AlgoTrading.Neural.Persistence.Database.csproj", "{84315861-9AF4-48BA-AA16-0EAB0BFB49FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Agent.Benchmarking", "AlgoTrading.Agent.Benchmarking\AlgoTrading.Agent.Benchmarking.csproj", "{912CF338-5D85-4DD3-9C78-015C45447626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.Agent.Benchmarking", "AlgoTrading.Agent.Benchmarking\AlgoTrading.Agent.Benchmarking.csproj", "{912CF338-5D85-4DD3-9C78-015C45447626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.Learning", "AlgoTrading.DQN.Learning\AlgoTrading.DQN.Learning.csproj", "{1CBEC61C-50B0-4F1F-9B88-7F223F58771E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.DQN.Learning", "AlgoTrading.DQN.Learning\AlgoTrading.DQN.Learning.csproj", "{1CBEC61C-50B0-4F1F-9B88-7F223F58771E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.Benchmarking", "AlgoTrading.DQN.Benchmarking\AlgoTrading.DQN.Benchmarking.csproj", "{B4C861EE-7CD8-48E3-9D04-C1382B3A8846}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.DQN.Benchmarking", "AlgoTrading.DQN.Benchmarking\AlgoTrading.DQN.Benchmarking.csproj", "{B4C861EE-7CD8-48E3-9D04-C1382B3A8846}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.Statistics", "AlgoTrading.DQN.Statistics\AlgoTrading.DQN.Statistics.csproj", "{11D60C9F-8110-4AC0-9119-75D22309B959}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Broker.Statistics", "AlgoTrading.Broker.Statistics\AlgoTrading.Broker.Statistics.csproj", "{06BA3602-AE64-4C50-B9D9-0341469A0912}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Agent.Statistics", "AlgoTrading.Agent.Statistics\AlgoTrading.Agent.Statistics.csproj", "{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.Statistics.Persistence", "AlgoTrading.DQN.Learning.Statistics.Persistence\AlgoTrading.DQN.Statistics.Persistence.csproj", "{582662A0-B42C-44CF-A638-AD4317BF8390}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrading.Broker.Positions", "AlgoTrading.Broker.Positions\AlgoTrading.Broker.Positions.csproj", "{BA5F2F77-7059-4234-BBEC-349267A61642}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.DQN.Statistics.Persistence.Database", "AlgoTrading.DQN.Statistics.Persistence.Database\AlgoTrading.DQN.Statistics.Persistence.Database.csproj", "{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTrading.Broker.Statistics.Persistence.Database", "AlgoTrading.Broker.Statistics.Persistence.Database\AlgoTrading.Broker.Statistics.Persistence.Database.csproj", "{28B412E0-C2AD-40C9-B4CB-BF90445958E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -319,6 +333,62 @@ Global
 		{B4C861EE-7CD8-48E3-9D04-C1382B3A8846}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B4C861EE-7CD8-48E3-9D04-C1382B3A8846}.Release|x64.ActiveCfg = Release|Any CPU
 		{B4C861EE-7CD8-48E3-9D04-C1382B3A8846}.Release|x64.Build.0 = Release|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Debug|x64.Build.0 = Debug|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Release|x64.ActiveCfg = Release|Any CPU
+		{11D60C9F-8110-4AC0-9119-75D22309B959}.Release|x64.Build.0 = Release|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Debug|x64.Build.0 = Debug|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Release|x64.ActiveCfg = Release|Any CPU
+		{06BA3602-AE64-4C50-B9D9-0341469A0912}.Release|x64.Build.0 = Release|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Debug|x64.Build.0 = Debug|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Release|x64.ActiveCfg = Release|Any CPU
+		{3E5A2FDE-F5E6-49DD-B01A-CAE28DBB4269}.Release|x64.Build.0 = Release|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Debug|x64.Build.0 = Debug|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Release|x64.ActiveCfg = Release|Any CPU
+		{582662A0-B42C-44CF-A638-AD4317BF8390}.Release|x64.Build.0 = Release|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Debug|x64.Build.0 = Debug|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Release|x64.ActiveCfg = Release|Any CPU
+		{BA5F2F77-7059-4234-BBEC-349267A61642}.Release|x64.Build.0 = Release|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E8CD69F-FAFE-4DD9-9122-920243CB79E9}.Release|x64.Build.0 = Release|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Debug|x64.Build.0 = Debug|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Release|x64.ActiveCfg = Release|Any CPU
+		{28B412E0-C2AD-40C9-B4CB-BF90445958E2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

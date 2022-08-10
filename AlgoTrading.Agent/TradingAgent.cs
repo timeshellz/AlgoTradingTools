@@ -1,8 +1,6 @@
 ﻿using AlgoTrading.Broker;
 using AlgoTrading.Neural;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AlgoTrading.Agent

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+﻿using System.Linq;
 
 namespace AlgoTrading.Neural
 {
@@ -40,17 +37,17 @@ namespace AlgoTrading.Neural
             return Delta;
         }
 
-       /* public double GetDelta(QuantileBackpropagationSpecification specification)
-        {
-            if (specification.TargetName == Name)
-            {
-                InnerActivationDerivative = 1;
-                Delta = specification.CalculateLossDerivative(AtomSupport, SoftProbability, WeightedInputSum);
-            }
-            else
-                Delta = 0;
+        /* public double GetDelta(QuantileBackpropagationSpecification specification)
+         {
+             if (specification.TargetName == Name)
+             {
+                 InnerActivationDerivative = 1;
+                 Delta = specification.CalculateLossDerivative(AtomSupport, SoftProbability, WeightedInputSum);
+             }
+             else
+                 Delta = 0;
 
-            return Delta;
-        }*/
+             return Delta;
+         }*/
     }
 }

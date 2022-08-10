@@ -10,8 +10,9 @@
 @using TradeBubble.ViewModels
 
 @using AlgoTrading.Stocks;
-@using AlgoTrading.Broker;
-@using AlgoTrading.DQN;
+@using AlgoTrading.Broker.Statistics;
+@using AlgoTrading.DQN.Statistics;
+@using AlgoTrading.Broker.Positions;
 
 @using Syncfusion.Blazor.Popups;
 
@@ -85,28 +86,25 @@
 
                 if (bestTradedStock != null)
                 {
-                    ClosedPosition firstClosedPosition = (ClosedPosition)(bestTradedStock.Positions
-                            .Where(p => p is ClosedPosition).FirstOrDefault());
-
-                    ClosedPosition lastClosedPosition = (ClosedPosition)(bestTradedStock.Positions
-                        .Where(p => p is ClosedPosition).LastOrDefault());
+                    MarketPositionStatistics firstClosedPosition = bestTradedStock.PositionStatistics.FirstOrDefault();
+                    MarketPositionStatistics lastClosedPosition = bestTradedStock.PositionStatistics.LastOrDefault();
 
                     <div class="row">
                         <div class="col-4">
                             <h6>Stock</h6>
-                            <p>@bestTradedStock.StockData.Identifier.Name</p>
+                            <p>@bestTradedStock.StockName</p>
                             <h6>Interval</h6>
-                            <p>@bestTradedStock.StockData.Interval</p>
+                            <p>@bestTradedStock.Interval</p>
                             <h6>Start Date</h6>
-                            <p>@bestTradedStock.StockData.StartDate.ToString()</p>
+                            <p>@bestTradedStock.StartDate.ToString()</p>
                             <h6>End Date</h6>
-                            <p>@bestTradedStock.StockData.EndDate.ToString()</p>
+                            <p>@bestTradedStock.EndDate.ToString()</p>
                         </div>
                         <div class="col-4">
                             <h6>First Position Date</h6>
                             @if (firstClosedPosition != null)
                             {
-                                <p>@firstClosedPosition.StartBar.Date</p>
+                                <p>@firstClosedPosition.StartDate</p>
                             }
                             else
                             {
@@ -115,7 +113,7 @@
                             <h6>First Close Price</h6>
                             @if (firstClosedPosition != null)
                             {
-                                <p>@bestTradedStock.StockData.Bars.First().Value.Close</p>
+                                <p>@bestTradedStock.StartPrice</p>
                             }
                             else
                             {
@@ -124,7 +122,7 @@
                             <h6>Last Position Date</h6>
                             @if (lastClosedPosition != null)
                             {
-                                <p>@lastClosedPosition.StartBar.Date</p>
+                                <p>@lastClosedPosition.StartDate</p>
                             }
                             else
                             {
@@ -133,7 +131,7 @@
                             <h6>Last Close Price</h6>
                             @if (lastClosedPosition != null)
                             {
-                                <p>@bestTradedStock.StockData.Bars.Last().Value.Close</p>
+                                <p>@bestTradedStock.EndPrice</p>
                             }
                             else
                             {
@@ -144,7 +142,7 @@
                             <h6>Profit</h6>
                             <p>@bestTradedStock.Profit</p>
                             <h6>Number of Trades</h6>
-                            <p>@bestTradedStock.Positions.Count</p>
+                            <p>@bestTradedStock.PositionStatistics.Count</p>
                         </div>
                     </div>
                     <div class="btn btn-secondary" @onclick="@(() => viewModel.IsExportingPositions = true)">Export positions</div>
@@ -167,68 +165,65 @@
 
                 if (bestTradedStock != null)
                 {
-                    ClosedPosition firstClosedPosition = (ClosedPosition)(bestTradedStock.Positions
-                            .Where(p => p is ClosedPosition).FirstOrDefault());
+                    MarketPositionStatistics firstClosedPosition = bestTradedStock.PositionStatistics.FirstOrDefault();
+                    MarketPositionStatistics lastClosedPosition = bestTradedStock.PositionStatistics.LastOrDefault();
 
-                    ClosedPosition lastClosedPosition = (ClosedPosition)(bestTradedStock.Positions
-                        .Where(p => p is ClosedPosition).LastOrDefault());
-
-                    <div class="row">
-                        <div class="col-4">
-                            <h6>Stock</h6>
-                            <p>@bestTradedStock.StockData.Identifier.Name</p>
-                            <h6>Interval</h6>
-                            <p>@bestTradedStock.StockData.Interval</p>
-                            <h6>Start Date</h6>
-                            <p>@bestTradedStock.StockData.StartDate.ToString()</p>
-                            <h6>End Date</h6>
-                            <p>@bestTradedStock.StockData.EndDate.ToString()</p>
+                        <div class="row">
+                            <div class="col-4">
+                                <h6>Stock</h6>
+                                <p>@bestTradedStock.StockName</p>
+                                <h6>Interval</h6>
+                                <p>@bestTradedStock.Interval</p>
+                                <h6>Start Date</h6>
+                                <p>@bestTradedStock.StartDate.ToString()</p>
+                                <h6>End Date</h6>
+                                <p>@bestTradedStock.EndDate.ToString()</p>
+                            </div>
+                            <div class="col-4">
+                                <h6>First Position Date</h6>
+                                @if (firstClosedPosition != null)
+                                {
+                                    <p>@firstClosedPosition.StartDate</p>
+                                }
+                                else
+                                {
+                                    <p>No closed positions found.</p>
+                                }
+                                <h6>First Close Price</h6>
+                                @if (firstClosedPosition != null)
+                                {
+                                    <p>@bestTradedStock.StartPrice</p>
+                                }
+                                else
+                                {
+                                    <p>No closed positions found.</p>
+                                }
+                                <h6>Last Position Date</h6>
+                                @if (lastClosedPosition != null)
+                                {
+                                    <p>@lastClosedPosition.StartDate</p>
+                                }
+                                else
+                                {
+                                    <p>No closed positions found.</p>
+                                }
+                                <h6>Last Close Price</h6>
+                                @if (lastClosedPosition != null)
+                                {
+                                    <p>@bestTradedStock.EndPrice</p>
+                                }
+                                else
+                                {
+                                    <p>No closed positions found.</p>
+                                }
+                            </div>
+                            <div class="col-4">
+                                <h6>Profit</h6>
+                                <p>@bestTradedStock.Profit</p>
+                                <h6>Number of Trades</h6>
+                                <p>@bestTradedStock.PositionStatistics.Count</p>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <h6>First Position Date</h6>
-                            @if (firstClosedPosition != null)
-                            {
-                                <p>@firstClosedPosition.StartBar.Date</p>
-                            }
-                            else
-                            {
-                                <p>No closed positions found.</p>
-                            }
-                            <h6>First Close Price</h6>
-                            @if (firstClosedPosition != null)
-                            {
-                                <p>@bestTradedStock.StockData.Bars.First().Value.Close</p>
-                            }
-                            else
-                            {
-                                <p>No closed positions found.</p>
-                            }
-                            <h6>Last Position Date</h6>
-                            @if (lastClosedPosition != null)
-                            {
-                                <p>@lastClosedPosition.StartBar.Date</p>
-                            }
-                            else
-                            {
-                                <p>No closed positions found.</p>
-                            }
-                            <h6>Last Close Price</h6>
-                            @if (lastClosedPosition != null)
-                            {
-                                <p>@bestTradedStock.StockData.Bars.Last().Value.Close</p>
-                            }
-                            else
-                            {
-                                <p>No closed positions found.</p>
-                            }
-                        </div>
-                        <div class="col-4">
-                            <h6>Profit</h6>
-                            <p>@bestTradedStock.Profit</p>
-                            <h6>Number of Trades</h6>
-                            <p>@bestTradedStock.Positions.Count</p>
-                        </div>
-                    </div>
                 }
                 else
                 {
@@ -279,7 +274,7 @@
             <SfChart Title="Total Learning Reward">
                 <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
-                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 XName="@nameof(EpochStatistics.EpochOrder)"
                                  YName="@nameof(EpochStatistics.TotalIterationReward)"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
                     </ChartSeries>
@@ -290,7 +285,7 @@
             <SfChart Title="Total Skilled Reward">
                 <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.SkilledEpochs.Values"
-                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 XName="@nameof(EpochStatistics.EpochOrder)"
                                  YName="@nameof(EpochStatistics.TotalIterationReward)"
                                  Type="ChartSeriesType.Line" Fill="#BB0000">
                     </ChartSeries>
@@ -301,7 +296,7 @@
             <SfChart Title="Average Loss">
                 <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
-                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 XName="@nameof(EpochStatistics.EpochOrder)"
                                  YName="@nameof(EpochStatistics.AverageLoss)"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
                     </ChartSeries>
@@ -312,7 +307,7 @@
             <SfChart Title="Epsilon">
                 <ChartSeriesCollection>
                     <ChartSeries DataSource="@viewModel.LearningEpochs.Values"
-                                 XName="@nameof(EpochStatistics.EpochID)"
+                                 XName="@nameof(EpochStatistics.EpochOrder)"
                                  YName="@nameof(EpochStatistics.FinalEpsilon)"
                                  Type="ChartSeriesType.Line" Fill="#0000BB">
                     </ChartSeries>
@@ -456,10 +451,10 @@
     </DialogButtons>
 </SfDialog>
 
-@if (viewModel.RecordBestTradedStock != null && viewModel.RecordBestTradedStock.Positions != null)
+@*@if (viewModel.RecordBestTradedStock != null && viewModel.RecordBestTradedStock.PositionStatistics != null)
 {
     <SfDialog Header="Export Positions" @bind-Visible="viewModel.IsExportingPositions" IsModal="true">
-        <SfGrid ID="exportGrid" @ref="exportGrid" DataSource="viewModel.RecordBestTradedStock.Positions.Where(p => p is ClosedPosition)"
+        <SfGrid ID="exportGrid" @ref="exportGrid" DataSource="viewModel.RecordBestTradedStock.PositionStatistics.Where(p => p is ClosedPosition)"
                 Toolbar="@(new List<string>() { "ExcelExport" })"
                 AllowPaging="true"
                 AllowExcelExport="true">
@@ -479,12 +474,12 @@
             <DialogButton Content="Close" OnClick="@(() => viewModel.IsExportingPositions = false)" />
         </DialogButtons>
     </SfDialog>
-}
+}*@
 
 
 @code
 {
-    private List<IntervalStockIdentifier> displayedAvailableStocks = new List<IntervalStockIdentifier>();
+    private List<StockIdentifier> displayedAvailableStocks = new List<StockIdentifier>();
     private SelectStocksForm form;
     private SfGrid<MarketPosition> exportGrid;
 

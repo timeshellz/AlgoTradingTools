@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.16" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Broker.Statistics.Persistence.Database\AlgoTrading.Broker.Statistics.Persistence.Database.csproj" />
+    <ProjectReference Include="..\AlgoTrading.DQN.Learning.Statistics.Persistence\AlgoTrading.DQN.Statistics.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

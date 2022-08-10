@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AlgoTrading.Neural.Persistence.Database.DTO
+﻿namespace AlgoTrading.Neural.Persistence.Database.DTO
 {
     public class NeuralConfigurationDTO
     {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AlgoTrading.Stocks
 {
@@ -10,7 +8,7 @@ namespace AlgoTrading.Stocks
     {
         public static TimeSpan GetTimeSpan(this DataInterval interval)
         {
-            switch(interval)
+            switch (interval)
             {
                 case DataInterval.Minute:
                     return new TimeSpan(0, 1, 0);

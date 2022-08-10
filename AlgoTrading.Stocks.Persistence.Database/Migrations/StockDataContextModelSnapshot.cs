@@ -44,15 +44,15 @@ namespace AlgoTrading.Stocks.Persistence.Database.Migrations
                     b.Property<string>("StockDataDTOFIGI")
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan?>("StockDataDTOInterval")
-                        .HasColumnType("interval");
+                    b.Property<int?>("StockDataDTOId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Volume")
                         .HasColumnType("numeric");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("StockDataDTOFIGI", "StockDataDTOInterval");
+                    b.HasIndex("StockDataDTOFIGI", "StockDataDTOId");
 
                     b.ToTable("Bars");
                 });
@@ -62,8 +62,8 @@ namespace AlgoTrading.Stocks.Persistence.Database.Migrations
                     b.Property<string>("FIGI")
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("Interval")
-                        .HasColumnType("interval");
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp without time zone");
@@ -74,7 +74,7 @@ namespace AlgoTrading.Stocks.Persistence.Database.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("FIGI", "Interval");
+                    b.HasKey("FIGI", "Id");
 
                     b.HasIndex("InfoID");
 
@@ -97,6 +97,9 @@ namespace AlgoTrading.Stocks.Persistence.Database.Migrations
                     b.Property<string>("FIGI")
                         .HasColumnType("text");
 
+                    b.Property<TimeSpan>("Interval")
+                        .HasColumnType("interval");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -112,7 +115,7 @@ namespace AlgoTrading.Stocks.Persistence.Database.Migrations
                 {
                     b.HasOne("AlgoTrading.Stocks.Persistence.Database.StockDataDTO", null)
                         .WithMany("Bars")
-                        .HasForeignKey("StockDataDTOFIGI", "StockDataDTOInterval");
+                        .HasForeignKey("StockDataDTOFIGI", "StockDataDTOId");
                 });
 
             modelBuilder.Entity("AlgoTrading.Stocks.Persistence.Database.StockDataDTO", b =>

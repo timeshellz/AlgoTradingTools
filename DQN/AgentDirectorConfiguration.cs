@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Agent;
-using AlgoTrading.Neural;
+﻿using AlgoTrading.Agent;
 using AlgoTrading.Broker;
+using AlgoTrading.Neural;
+using System;
 
 namespace AlgoTrading.DQN
 {

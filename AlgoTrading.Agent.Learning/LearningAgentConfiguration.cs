@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AlgoTrading.Agent.Learning
+﻿namespace AlgoTrading.Agent.Learning
 {
     public class LearningAgentConfiguration : AgentConfiguration
-    {       
+    {
         public int MemoryBuferSize { get; set; } = 10000;
         public int BatchSize { get; set; } = 32;
         public double Discount { get; set; } = 0.99;

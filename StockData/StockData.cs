@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
 using System.Linq;
-using Newtonsoft.Json.Linq;
-
-using Skender.Stock.Indicators;
 
 namespace AlgoTrading.Stocks
 {
-    
+
     public class StockData
-    {             
+    {
         public StockIdentifier Identifier { get; private set; }
         public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }       
-        public DataInterval Interval { get; private set; }
+        public DateTime EndDate { get; private set; }
         public SortedList<DateTime, StockBar> Bars { get; private set; }
         public SortedList<DateTime, IndicatorBar> Indicators { get; private set; }
 
@@ -69,7 +63,6 @@ namespace AlgoTrading.Stocks
             public StockDataBuilder(StockData stockData)
             {
                 this.stockData = stockData;
-                this.stockData.Interval = DataInterval.Any;
             }
 
             public StockData Build()
@@ -77,25 +70,18 @@ namespace AlgoTrading.Stocks
                 if (stockData.Identifier == null)
                     throw new ArgumentNullException("Identifier not set.");
 
-                if(stockData.Interval == DataInterval.Any)
+                if (stockData.Identifier.Interval == DataInterval.Any)
                     throw new ArgumentNullException("Interval not set.");
 
-                if(stockData.Bars == null)
+                if (stockData.Bars == null)
                     throw new ArgumentNullException("Bars not set.");
 
                 return stockData;
-            }           
+            }
 
             public StockDataBuilder SetIdentifier(StockIdentifier identifier)
             {
                 stockData.Identifier = identifier;
-
-                return this;
-            }
-
-            public StockDataBuilder SetInterval(DataInterval interval)
-            {
-                stockData.Interval = interval;
 
                 return this;
             }

@@ -1,8 +1,6 @@
 ﻿using AlgoTrading.Stocks;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Skender.Stock.Indicators;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AlgoTrading.Broker.Simulated
@@ -13,10 +11,10 @@ namespace AlgoTrading.Broker.Simulated
         {
             var stockBars = bars;
             var indicatorBars = new List<IndicatorBar>(stockBars.Select(e => new IndicatorBar() { Date = e.Date })).ToList();
-            
+
             var stochResults = stockBars.GetStoch(5, 1, 3).ToDictionary(k => k.Date);
             var rsiResults = stockBars.GetRsi().ToDictionary(k => k.Date);
-            var sma200Results = stockBars.GetSma(200).ToDictionary(k => k.Date);           
+            var sma200Results = stockBars.GetSma(200).ToDictionary(k => k.Date);
             var demaResults = stockBars.GetDoubleEma(20);
             var demaRocResults = ConvertToQuotes(demaResults).GetRoc(4).ToDictionary(k => k.Date);
             var demaResultsDictionary = demaResults.ToDictionary(k => k.Date);
@@ -38,10 +36,10 @@ namespace AlgoTrading.Broker.Simulated
             var roc100Roc100Results = ConvertToQuotes(sma50Roc100Results).GetRoc(100);
             var roc100Roc10Results = ConvertToQuotes(roc100Roc100Results).GetRoc(10)
                 .Where(x => x.Roc != null)
-                .Select(e => 
+                .Select(e =>
                 {
-                    e.Roc /= 100; 
-                    return e; 
+                    e.Roc /= 100;
+                    return e;
                 }).ToDictionary(k => k.Date);
 
             indicatorBars.ForEach(e =>
@@ -51,13 +49,13 @@ namespace AlgoTrading.Broker.Simulated
                 e.RSI = rsiResults[e.Date].Rsi;
                 e.SMA200 = sma200Results[e.Date].Sma;
                 e.SMA50 = sma50ResultsDictionary[e.Date].Sma;
-                e.DEMA = demaResultsDictionary[e.Date].Dema;                
+                e.DEMA = demaResultsDictionary[e.Date].Dema;
                 e.MACD = macdResults[e.Date].Macd;
                 e.MACDSignal = macdResults[e.Date].Signal;
                 e.MACDHistogram = macdResults[e.Date].Histogram;
                 e.BBHigh = bbResults[e.Date].UpperBand;
                 e.BBMid = bbResults[e.Date].Sma;
-                e.BBLow = bbResults[e.Date].LowerBand;                
+                e.BBLow = bbResults[e.Date].LowerBand;
                 e.ADX = adxResults[e.Date].Adx;
                 e.AroonUp = aroonResults[e.Date].AroonUp;
                 e.AroonDown = aroonResults[e.Date].AroonDown;
@@ -78,7 +76,7 @@ namespace AlgoTrading.Broker.Simulated
                 else
                     e.TripleDerivative = null;
             }
-            );                              
+            );
 
             return indicatorBars;
         }

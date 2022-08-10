@@ -1,16 +1,14 @@
-﻿using System;
+﻿using AlgoTrading.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using AlgoTrading.Neural;
-using AlgoTrading.Utilities;
 
 namespace AlgoTrading.Neural
 {
     public class NeuralMemoryBuffer : ICollection<NeuralMemory>
     {
-        public int Count { get; private set; } = 0;       
+        public int Count { get; private set; } = 0;
         public bool IsReadOnly { get; private set; } = false;
         public double PrioritySum { get; private set; } = 0;
         public double MaxPriority { get; private set; } = 1;
@@ -34,17 +32,17 @@ namespace AlgoTrading.Neural
             itemPriority = MaxPriority + 0.000000001;
             PrioritySum += itemPriority;
 
-            while(true)
+            while (true)
             {
                 int attemptsCount = 0;
 
                 if (reverseMemoryProbabilityBuffer.ContainsKey(itemPriority))
                 {
-                    itemPriority -= RandomGenerator.Generate(0, 1000000000)/1000000000000;
+                    itemPriority -= RandomGenerator.Generate(0, 1000000000) / 1000000000000;
 
                     if (attemptsCount > 500)
                         throw new ArgumentException();
-                }                  
+                }
                 else
                     break;
             }
@@ -64,7 +62,7 @@ namespace AlgoTrading.Neural
 
         public void Add(List<NeuralMemory> items)
         {
-            foreach(NeuralMemory item in items)
+            foreach (NeuralMemory item in items)
             {
                 Add(item);
             }
@@ -74,7 +72,7 @@ namespace AlgoTrading.Neural
         {
             double oldPriority = memoryProbabilityBuffer[item];
             double newPriority = item.AbsoluteTemporalDifference + probabilityConstant;
-           
+
             while (true)
             {
                 int attemptsCount = 0;
@@ -117,14 +115,21 @@ namespace AlgoTrading.Neural
 
             while (i <= PrioritySum - rangeWidth)
             {
-                for(int j = 0; j < valuesPerRange; j++)
+                for (int j = 0; j < valuesPerRange; j++)
                 {
                     int randomElement = (int)RandomGenerator.Generate(i, i + valuesPerRange);
 
-                    sampledBatch.Add(reverseMemoryProbabilityBuffer.Values[randomElement]);
+                    try
+                    {
+                        sampledBatch.Add(reverseMemoryProbabilityBuffer.Values[randomElement]);
+                    }
+                    catch (Exception e)
+                    {
+                        var test = 1;
+                    }
 
                     if (sampledBatch.Count == batchSize)
-                        return sampledBatch;                   
+                        return sampledBatch;
                 }
 
                 i += rangeWidth;

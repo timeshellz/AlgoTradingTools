@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+﻿using System.Linq;
 
 namespace AlgoTrading.Neural
 {
     class HiddenNeuron : Neuron
     {
-        public HiddenNeuron(int layer) : base(layer, NeuralConfiguration.ActivationType.Gelu)
+        public HiddenNeuron(int layer) : base(layer, NeuralConfiguration.ActivationType.Selu)
         {
-            
+
         }
 
         public double GetDelta()

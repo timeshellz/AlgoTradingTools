@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Agent.Benchmarking;
-using AlgoTrading.Neural;
+﻿using AlgoTrading.Agent.Benchmarking;
 using AlgoTrading.Broker;
+using AlgoTrading.Neural;
 
 namespace AlgoTrading.DQN.Benchmarking
 {

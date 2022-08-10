@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Stocks;
+﻿using System.Collections.Generic;
 
 namespace AlgoTrading.Stocks
 {

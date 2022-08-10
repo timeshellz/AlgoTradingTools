@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AlgoTrading.Agent.Statistics\AlgoTrading.Agent.Statistics.csproj" />
     <ProjectReference Include="..\AlgoTrading.Agent\AlgoTrading.Agent.csproj" />
     <ProjectReference Include="..\AlgoTrading.Broker\AlgoTrading.Broker.csproj" />
     <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />

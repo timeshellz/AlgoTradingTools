@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Statistics;
+﻿using AlgoTrading.Statistics;
 
-namespace AlgoTrading.Agent.Learning
+namespace AlgoTrading.Agent.Statistics
 {
     public class LearningAgentStatistics : IStatistics
     {

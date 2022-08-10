@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using AlgoTrading.Stocks;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using AlgoTrading.Broker.Statistics;
 using AlgoTrading.Statistics;
+using AlgoTrading.Stocks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlgoTrading.Broker
 {
@@ -20,13 +21,13 @@ namespace AlgoTrading.Broker
         int GetLimitedPositionSize(double percentage);
     }
 
-    public enum BrokerAction { Skip, Long75, Long50, Long25, Short75, Short50, Short25, Close}
+    public enum BrokerAction { Skip, Long75, Long50, Long25, Short75, Short50, Short25, Close }
 
     public static class BrokerActionExtensions
     {
         public static string GetActionString(this BrokerAction action)
         {
-            switch(action)
+            switch (action)
             {
                 case BrokerAction.Long75:
                     return "Long75";
@@ -56,7 +57,7 @@ namespace AlgoTrading.Broker
 
         public static BrokerAction GetBrokerAction(this string action)
         {
-            switch(action)
+            switch (action)
             {
                 case "Long75":
                     return BrokerAction.Long75;

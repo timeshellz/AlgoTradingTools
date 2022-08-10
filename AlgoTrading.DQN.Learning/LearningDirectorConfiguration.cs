@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Neural;
+﻿using AlgoTrading.Agent.Learning;
 using AlgoTrading.Broker;
-using AlgoTrading.Agent;
-using AlgoTrading.Agent.Learning;
-using System.IO;
+using AlgoTrading.Neural;
 
 namespace AlgoTrading.DQN.Learning
 {
@@ -13,7 +8,7 @@ namespace AlgoTrading.DQN.Learning
     {
         public new LearningAgentConfiguration AgentConfiguration { get; set; }
 
-        public LearningDirectorConfiguration(LearningAgentConfiguration agentSettings, NeuralConfiguration neuralSettings, BrokerConfiguration brokerSettings) 
+        public LearningDirectorConfiguration(LearningAgentConfiguration agentSettings, NeuralConfiguration neuralSettings, BrokerConfiguration brokerSettings)
             : base(agentSettings, neuralSettings, brokerSettings)
         {
             AgentConfiguration = agentSettings;

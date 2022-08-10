@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MathNet.Numerics;
-
-namespace AlgoTrading.Neural
+﻿namespace AlgoTrading.Neural
 {
     public abstract class OutputNeuron : Neuron
     {
@@ -14,6 +9,6 @@ namespace AlgoTrading.Neural
         {
             Name = name;
         }
-        
+
     }
 }

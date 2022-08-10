@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AlgoTrading.Stocks.Persistence.Database
 {
@@ -13,5 +10,6 @@ namespace AlgoTrading.Stocks.Persistence.Database
         public string Currency { get; set; }
         public string Sector { get; set; }
         public string Country { get; set; }
+        public TimeSpan Interval { get; set; }
     }
 }

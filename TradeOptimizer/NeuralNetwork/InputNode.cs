@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
-using MathNet.Numerics.Distributions;
 
 namespace AlgoTrading.Neural
 {

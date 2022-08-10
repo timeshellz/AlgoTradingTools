@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace AlgoTrading.Neural
 {
@@ -16,7 +13,7 @@ namespace AlgoTrading.Neural
             Connections = new List<NodeConnection>();
             Layer = layer;
         }
-       
+
         public NodeConnection Connect(INode otherNode, ConnectionDirection direction, double weight)
         {
             NodeConnection connection;

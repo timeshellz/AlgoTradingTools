@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AlgoTrading.Neural
 {
@@ -20,10 +18,10 @@ namespace AlgoTrading.Neural
         }
 
         public double CalculateLossDerivative(double targetProbability, double estimatedProbability)
-        {         
+        {
             double test = NeuralMath.CrossEntropyDerivative(targetProbability, estimatedProbability);
 
-            if(double.IsNaN(test))
+            if (double.IsNaN(test))
             {
                 int s = 0;
             }

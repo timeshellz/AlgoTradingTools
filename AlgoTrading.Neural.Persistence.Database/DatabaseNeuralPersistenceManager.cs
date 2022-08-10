@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AlgoTrading.Neural.Persistence.Database.DTO;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using AlgoTrading.Neural.Persistence.Database.DTO;
+using System;
+using System.Threading.Tasks;
 
 namespace AlgoTrading.Neural.Persistence.Database
 {
@@ -62,7 +59,7 @@ namespace AlgoTrading.Neural.Persistence.Database
                 }
             }
             catch (Exception e)
-            { }           
+            { }
         }
     }
 }

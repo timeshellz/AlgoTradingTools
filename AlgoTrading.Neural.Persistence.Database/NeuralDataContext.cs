@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AlgoTrading.Neural.Persistence.Database.DTO;
 using Microsoft.EntityFrameworkCore;
-using AlgoTrading.Neural.Persistence.Database.DTO;
 
 namespace AlgoTrading.Neural.Persistence.Database
 {

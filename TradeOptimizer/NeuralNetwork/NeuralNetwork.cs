@@ -1,11 +1,8 @@
-﻿using System;
+﻿using AlgoTrading.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
-
-using AlgoTrading.Utilities;
 
 namespace AlgoTrading.Neural
 {
@@ -31,7 +28,7 @@ namespace AlgoTrading.Neural
             CreateOutputNeurons();
         }
 
-        public NeuralNetwork(List<INode> inputNodes, List<INode> hiddenNeurons, 
+        public NeuralNetwork(List<INode> inputNodes, List<INode> hiddenNeurons,
             List<INode> outputNeurons, NeuralConfiguration configuration)
         {
             Name = configuration.NetworkName;
@@ -39,8 +36,8 @@ namespace AlgoTrading.Neural
             Nodes = new Dictionary<int, List<INode>>();
 
             Nodes.Add(0, inputNodes.ToList());
-            
-            for(int i = 1; i <= Settings.HiddenLayerCount; i++)
+
+            for (int i = 1; i <= Settings.HiddenLayerCount; i++)
                 Nodes.Add(i, hiddenNeurons.Where(n => n.Layer == i).ToList());
 
             Nodes.Add(Settings.HiddenLayerCount + 1, outputNeurons.ToList());
@@ -49,9 +46,9 @@ namespace AlgoTrading.Neural
         [OnDeserialized]
         void ReassignConnections(StreamingContext context)
         {
-            foreach(NodeConnection connection in NodeConnections)
+            foreach (NodeConnection connection in NodeConnections)
             {
-                foreach(List<INode> layerNodes in Nodes.Values)
+                foreach (List<INode> layerNodes in Nodes.Values)
                 {
                     foreach (INode node in layerNodes)
                     {
@@ -59,7 +56,7 @@ namespace AlgoTrading.Neural
                             node.Connections.Add(connection);
                     }
                 }
-                
+
             }
         }
 
@@ -67,7 +64,7 @@ namespace AlgoTrading.Neural
         {
             Nodes.Add(0, new List<INode>());
 
-            foreach(string inputName in Settings.Inputs)
+            foreach (string inputName in Settings.Inputs)
             {
                 Nodes[0].Add(new InputNode(0, inputName));
             }
@@ -75,11 +72,11 @@ namespace AlgoTrading.Neural
 
         void CreateHiddenLayers()
         {
-            for(int i = 0; i < Settings.HiddenLayerCount; i++)
+            for (int i = 0; i < Settings.HiddenLayerCount; i++)
             {
                 Nodes.Add(i + 1, new List<INode>());
 
-                for(int j = 0; j < Settings.Inputs.Count; j++)
+                for (int j = 0; j < Settings.Inputs.Count; j++)
                 {
                     HiddenNeuron newNeuron = new HiddenNeuron(i + 1);
                     Nodes[i + 1].Add(newNeuron);
@@ -95,13 +92,13 @@ namespace AlgoTrading.Neural
 
             //if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             //{
-                foreach (string outputName in Settings.Outputs)
-                {
-                    NonCategoricalOutputNeuron outputNode = new NonCategoricalOutputNeuron(Settings.HiddenLayerCount + 1, outputName);
-                    Nodes[outputNode.Layer].Add(outputNode);
+            foreach (string outputName in Settings.Outputs)
+            {
+                NonCategoricalOutputNeuron outputNode = new NonCategoricalOutputNeuron(Settings.HiddenLayerCount + 1, outputName);
+                Nodes[outputNode.Layer].Add(outputNode);
 
-                    GenerateNewNeuralConnections(outputNode);
-                }
+                GenerateNewNeuralConnections(outputNode);
+            }
             //}
             //else
             //{
@@ -137,7 +134,7 @@ namespace AlgoTrading.Neural
         }
 
         void GenerateNewNeuralConnections(INode newNode)
-        {            
+        {
             if (newNode.Layer < 1)
                 throw new ArgumentException();
 
@@ -145,7 +142,7 @@ namespace AlgoTrading.Neural
 
             foreach (INode node in Nodes[newNode.Layer - 1])
             {
-                randomWeight = NeuralMath.He(RandomGenerator.Generate(-1000000, 1000000)/1000000, Nodes[newNode.Layer - 1].Count);
+                randomWeight = NeuralMath.He(RandomGenerator.Generate(-1000000, 1000000) / 1000000, Nodes[newNode.Layer - 1].Count);
                 NodeConnection newConnection = newNode.Connect(node, ConnectionDirection.LeftToRight, randomWeight);
 
                 NodeConnections.Add(newConnection);
@@ -177,12 +174,12 @@ namespace AlgoTrading.Neural
 
             //if(Settings.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             //{
-                foreach (INode node in Nodes[Nodes.Count - 1])
-                {
-                    OutputNeuron outputNeuron = (OutputNeuron)node;
+            foreach (INode node in Nodes[Nodes.Count - 1])
+            {
+                OutputNeuron outputNeuron = (OutputNeuron)node;
 
-                    output.Add(outputNeuron.Name, outputNeuron.Value);
-                }
+                output.Add(outputNeuron.Name, outputNeuron.Value);
+            }
             //}
             //else
             //{
@@ -204,9 +201,9 @@ namespace AlgoTrading.Neural
 
         public void ForwardFeed()
         {
-            for(int i = 1; i < Settings.HiddenLayerCount + 2; i++)
+            for (int i = 1; i < Settings.HiddenLayerCount + 2; i++)
             {
-                foreach(INode node in Nodes[i])
+                foreach (INode node in Nodes[i])
                 {
                     Neuron currentNode = (Neuron)node;
                     currentNode.Activate();
@@ -243,9 +240,9 @@ namespace AlgoTrading.Neural
         {
             PropagateOutputs(specification);
 
-            for(int i = Settings.HiddenLayerCount; i >= 1; i--)
+            for (int i = Settings.HiddenLayerCount; i >= 1; i--)
             {
-                foreach(INode node in Nodes[i])
+                foreach (INode node in Nodes[i])
                 {
                     HiddenNeuron neuron = (HiddenNeuron)node;
                     neuron.GetDelta();
@@ -254,7 +251,7 @@ namespace AlgoTrading.Neural
                     {
                         connection.CalculateGradient();
                     }
-                }            
+                }
             }
 
             foreach (INode node in Nodes[Settings.HiddenLayerCount + 1])
@@ -264,20 +261,20 @@ namespace AlgoTrading.Neural
                     connection.CalculateGradient();
                 }
             }
-        }       
+        }
 
         void PropagateOutputs(IBackpropagationSpecification specification)
         {
             //if(specification.PredictionType == NeuralConfiguration.PredictionMechanism.NonCategorical)
             //{
-                foreach(INode node in Nodes[Nodes.Keys.Count - 1])
+            foreach (INode node in Nodes[Nodes.Keys.Count - 1])
+            {
+                if (node.GetType() == typeof(NonCategoricalOutputNeuron))
                 {
-                    if (node.GetType() == typeof(NonCategoricalOutputNeuron))
-                    {
-                        NonCategoricalOutputNeuron outputNeuron = (NonCategoricalOutputNeuron)node;                       
-                        outputNeuron.GetDelta((HuberLossBackpropagationSpecification)specification);
-                    }
+                    NonCategoricalOutputNeuron outputNeuron = (NonCategoricalOutputNeuron)node;
+                    outputNeuron.GetDelta((HuberLossBackpropagationSpecification)specification);
                 }
+            }
             //}
             //else
             //{
@@ -320,11 +317,11 @@ namespace AlgoTrading.Neural
 
         public void UpdateWeights(bool isAscent = false)
         {
-            for(int i = 0; i < Nodes.Keys.Count - 2; i++)
+            for (int i = 0; i < Nodes.Keys.Count - 2; i++)
             {
-                foreach(INode node in Nodes[i])
+                foreach (INode node in Nodes[i])
                 {
-                    foreach(NodeConnection connection in node.Connections.Where(e => e.InputNode == node))
+                    foreach (NodeConnection connection in node.Connections.Where(e => e.InputNode == node))
                     {
                         connection.UpdateWeight(Settings.LearningRate, isAscent);
                     }
@@ -336,13 +333,13 @@ namespace AlgoTrading.Neural
         {
             Dictionary<int, double> output = new Dictionary<int, double>();
 
-            for(int i = 0; i < Nodes.Count - 1; i++)
+            for (int i = 0; i < Nodes.Count - 1; i++)
             {
-                foreach(INode node in Nodes[i])
+                foreach (INode node in Nodes[i])
                 {
-                    foreach(NodeConnection connection in node.Connections)
+                    foreach (NodeConnection connection in node.Connections)
                     {
-                        if(!output.ContainsKey(connection.ID))
+                        if (!output.ContainsKey(connection.ID))
                             output.Add(connection.ID, connection.Weight);
                     }
                 }
@@ -375,7 +372,7 @@ namespace AlgoTrading.Neural
                 {
                     foreach (NodeConnection connection in node.Connections)
                     {
-                        if(!output.ContainsKey(connection.ID))
+                        if (!output.ContainsKey(connection.ID))
                             output.Add(connection.ID, connection.Gradient);
                     }
                 }
@@ -411,7 +408,7 @@ namespace AlgoTrading.Neural
         //public double MinV { get; set; } = -10;
         //public double MaxV { get; set; } = 10;
         //public double DeltaZ { get; set; } = 0;
-        
+
         //public NeuralSettings(string networkName, List<string> inputs, List<string> outputs, int hiddenLayers, double learningRate)
         //{
         //    NetworkName = networkName.Replace(" ", "_");
@@ -439,10 +436,10 @@ namespace AlgoTrading.Neural
         //        MinV = DeltaZ;
         //        MaxV = 1;
         //    }
-            
+
         //}
 
-        public enum PredictionMechanism { NonCategorical, CategoricalCrossEntropy, CategoricalQuantile}
-        public enum ActivationType { Gelu, SoftMax, Linear}
+        public enum PredictionMechanism { NonCategorical, CategoricalCrossEntropy, CategoricalQuantile }
+        public enum ActivationType { Gelu, SoftMax, Linear, Selu }
     }
 }

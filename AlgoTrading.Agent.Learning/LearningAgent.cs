@@ -1,7 +1,8 @@
-﻿using AlgoTrading.Neural;
+﻿using AlgoTrading.Agent.Statistics;
 using AlgoTrading.Broker;
-using AlgoTrading.Utilities;
+using AlgoTrading.Neural;
 using AlgoTrading.Statistics;
+using AlgoTrading.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace AlgoTrading.Agent.Learning
 
         private LearningAgentStatistics statistics = new LearningAgentStatistics();
 
-        public LearningAgent(LearningAgentConfiguration configuration, 
+        public LearningAgent(LearningAgentConfiguration configuration,
             NeuralNetwork targetNetwork, NeuralNetwork onlineNetwork, IBroker broker) : base(onlineNetwork, broker)
         {
             Configuration = configuration;
@@ -28,37 +29,33 @@ namespace AlgoTrading.Agent.Learning
             TargetNetwork = targetNetwork;
         }
 
-        public override async Task<bool> Interact()
+        public async Task<bool> Interact(bool processMemories)
         {
+            MarketState previousState = Broker.CurrentState;
             MarketState currentState = await Broker.GetNextTimestep();
             List<BrokerAction> possibleActions = Broker.GetAvailableActions();
 
-            double reward = 0;
+            double reward = CalculateReward(previousState.Cash + previousState.Equity, currentState.Cash + currentState.Equity);
 
-            //if (currentState.PreviousPosition != null && currentState.PreviousPosition is OpenPosition openPosition)
-            //    reward = CalculateReward(openPosition.OpeningValue, 
-            //        openPosition.GetCurrentValueChange(currentState.CurrentStockBar),
-            //        openPosition.Commission);
-
-            if (currentState.CurrentPosition != null && currentState.CurrentPosition is OpenPosition openPosition)
-                reward = CalculateReward(openPosition.OpeningValue, openPosition.GetPositionValue(currentState.CurrentStockBar));
-
-            ProcessCollectedMemories(reward, currentState.ToDictionary(), possibleActions.GetActionStrings(), possibleActions.Count == 0);
+            if (processMemories)
+                ProcessCollectedMemories(reward, currentState.ToDictionary(), possibleActions.GetActionStrings(), possibleActions.Count == 0);
 
             if (possibleActions.Count > 0)
             {
                 BrokerAction action = SelectActionFromState(currentState, possibleActions);
 
-                NeuralMemory newMemory = new NeuralMemory(currentState.ToDictionary(), possibleActions.GetActionStrings());
-                newMemory.ExecuteAction(action.GetActionString());
+                if (processMemories)
+                {
+                    NeuralMemory newMemory = new NeuralMemory(currentState.ToDictionary(), possibleActions.GetActionStrings());
+                    newMemory.ExecuteAction(action.GetActionString());
 
-                collectedInteractionMemories.Add(newMemory);
-                MemoryBuffer.Add(newMemory);
-                statistics.MemoriesCollected++;
+                    collectedInteractionMemories.Add(newMemory);
+                    statistics.MemoriesCollected++;
+                }
 
                 await EmulateAction(action);
-                
-                statistics.RecordInteraction(reward, 1);
+
+                statistics.RecordInteraction(reward, Convert.ToInt32(processMemories));
 
                 return true;
             }
@@ -66,11 +63,16 @@ namespace AlgoTrading.Agent.Learning
             statistics.RecordInteraction(reward, 0);
 
             return false;
-        }       
+        }
+
+        public override async Task<bool> Interact()
+        {
+            return await Interact(true);
+        }
 
         public void DecayEpsilon()
         {
-            Configuration.CurrentEpsilon = Math.Max(Configuration.MinimumEpsilon, 
+            Configuration.CurrentEpsilon = Math.Max(Configuration.MinimumEpsilon,
                 Configuration.CurrentEpsilon * Configuration.EpsilonDecay);
         }
 
@@ -99,22 +101,7 @@ namespace AlgoTrading.Agent.Learning
 
         protected override BrokerAction SelectActionFromState(MarketState marketState, List<BrokerAction> possibleActions)
         {
-            float randomGreedy = RandomGenerator.Generate(0, 100000) / 100000;
-
-            BrokerAction action;
-
-            if (Configuration.CurrentEpsilon > randomGreedy)
-            {
-                randomGreedy = RandomGenerator.Generate(0, possibleActions.Count);
-
-                action = possibleActions.ElementAt((int)randomGreedy);
-            }
-            else
-            {
-                action = base.SelectActionFromState(marketState, possibleActions);
-            }
-
-            return action;
+            return base.SelectActionFromState(marketState, possibleActions);
         }
 
         private List<TrainingSample> GetTrainingSamples(List<NeuralMemory> batch)
@@ -123,9 +110,6 @@ namespace AlgoTrading.Agent.Learning
 
             foreach (NeuralMemory memory in batch)
             {
-                if (memory.States.Count != Configuration.MemorySteps)
-                    continue;
-
                 Dictionary<int, double> targets = new Dictionary<int, double>();
 
                 targets.Add(0, 0);
@@ -133,30 +117,26 @@ namespace AlgoTrading.Agent.Learning
                 double cumulativeRewards = 0;
 
                 for (int i = memory.States.Count - 2; i >= 0; i--)
-                {                   
+                {
                     if (memory.EpisodeEnded)
                     {
                         cumulativeRewards += memory.Rewards[i];
                     }
-                    else if(i == memory.States.Count - 2)
+                    else if (i == memory.States.Count - 2)
                     {
                         TargetNetwork.FillInputs(memory.States[i + 1]);
                         TargetNetwork.ForwardFeed();
 
-                        //TODO: optimize
                         string action = GetMaxQAction(TargetNetwork.GetOutputs(), memory.PossibleActions[i + 1].GetBrokerActions()).Key.GetActionString();
 
                         OnlineNetwork.FillInputs(memory.States[i + 1]);
                         OnlineNetwork.ForwardFeed();
 
-                        //OnlineCriticNetwork.FillInputs(criticInputs);
-                        //OnlineCriticNetwork.ForwardFeed();
-
                         targets[0] = Math.Pow(Configuration.Discount, i) * OnlineNetwork.GetOutputs()[action];
                     }
                     else
                     {
-                        if(i != 0)
+                        if (i != 0)
                         {
                             cumulativeRewards += memory.Rewards[i] * Math.Pow(Configuration.Discount, i);
                         }
@@ -178,7 +158,7 @@ namespace AlgoTrading.Agent.Learning
 
                 statistics.RecordLossCalculation(NeuralMath.HuberLoss(temporalDifference));
 
-                for(int i = 0; i < targets.Count; i++)
+                for (int i = 0; i < targets.Count; i++)
                     targets[i] += cumulativeRewards;
 
                 output.Add(new TrainingSample(targets, memory.Actions[0], memory.States[0]));
@@ -190,7 +170,7 @@ namespace AlgoTrading.Agent.Learning
         public void Train()
         {
             for (int i = 0; i < 4; i++)
-            {               
+            {
                 collectedInteractionMemories = new List<NeuralMemory>();
 
                 var trainingSamples = GetTrainingSamples(MemoryBuffer.SampleBatch(Configuration.BatchSize));
@@ -198,7 +178,7 @@ namespace AlgoTrading.Agent.Learning
                 foreach (TrainingSample sample in trainingSamples)
                 {
                     statistics.RecordQEstimation();
-                    
+
                     HuberLossBackpropagationSpecification specification = new HuberLossBackpropagationSpecification(sample.Action, sample.Targets.Values.First());
 
                     OnlineNetwork.FillInputs(sample.State.ToDictionary(k => k.Key, v => (double)v.Value));
@@ -206,12 +186,12 @@ namespace AlgoTrading.Agent.Learning
                     OnlineNetwork.Backpropagate(specification);
                     OnlineNetwork.UpdateWeights();
                 }
-            }            
+            }
         }
 
-        private double CalculateReward(decimal positionStartValue, decimal currentPositionValue)
+        private double CalculateReward(decimal previousTotalCapital, decimal currentTotalCapital)
         {
-            double reward = (double)((currentPositionValue - positionStartValue)/positionStartValue);
+            double reward = Math.Tanh((double)((2 * currentTotalCapital - previousTotalCapital) / currentTotalCapital) - 1);
             return reward;
         }
 
@@ -233,7 +213,7 @@ namespace AlgoTrading.Agent.Learning
         //    return reward;
         //}
 
-        private void ProcessCollectedMemories(double newReward, Dictionary<string, double> newState, 
+        private void ProcessCollectedMemories(double newReward, Dictionary<string, double> newState,
             List<string> newPossibleActions,
             bool isEpisodeTerminated = false)
         {
@@ -245,12 +225,19 @@ namespace AlgoTrading.Agent.Learning
 
                     if (isEpisodeTerminated)
                     {
+                        if (collectedInteractionMemories[i].TimeStep < Configuration.MemorySteps - 1)
+                        {
+                            collectedInteractionMemories.RemoveAt(i);
+                            continue;
+                        }
+
                         collectedInteractionMemories[i].CompleteEpisode();
-                        collectedInteractionMemories[i].CompleteMemory();
                     }
-                    else if (collectedInteractionMemories[i].TimeStep == Configuration.MemorySteps - 1)
+
+                    if (collectedInteractionMemories[i].TimeStep == Configuration.MemorySteps - 1)
                     {
                         collectedInteractionMemories[i].CompleteMemory();
+                        MemoryBuffer.Add(collectedInteractionMemories[i]);
                     }
                 }
             }

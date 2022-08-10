@@ -11,11 +11,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AlgoTrading.Stocks.Persistence\AlgoTrading.Stocks.Persistence.csproj" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\AlgoTrading.Stocks.Persistence\AlgoTrading.Stocks.Persistence.csproj" />
+    <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
   </ItemGroup>
 
 </Project>

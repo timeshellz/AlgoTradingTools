@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AlgoTrading.Neural.Persistence.Database.DTO
 {
@@ -12,5 +10,5 @@ namespace AlgoTrading.Neural.Persistence.Database.DTO
         public List<OutputNeuronDTO> Outputs { get; set; }
         public List<NodeConnectionDTO> Connections { get; set; }
         public NeuralConfigurationDTO Configuration { get; set; }
-    }   
+    }
 }

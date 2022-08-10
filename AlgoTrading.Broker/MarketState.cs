@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using AlgoTrading.Broker.Positions;
 using AlgoTrading.Stocks;
+using System;
+using System.Collections.Generic;
 
 namespace AlgoTrading.Broker
 {
@@ -17,12 +17,12 @@ namespace AlgoTrading.Broker
         public MarketPosition PreviousPosition { get; set; }
         public MarketPosition CurrentPosition { get; set; }
 
-        public MarketState(decimal cash, decimal equity, StockBar currentBar, 
+        public MarketState(decimal cash, decimal equity, StockBar currentBar,
             IndicatorBar currentIndicators, MarketPosition currentPosition) : this(cash, equity, currentBar, currentIndicators)
         {
             CurrentPosition = currentPosition;
-            
-            if(CurrentPosition is OpenPosition open)
+
+            if (CurrentPosition is OpenPosition open)
             {
                 Equity = open.GetPositionValue(currentBar);
             }
@@ -89,17 +89,28 @@ namespace AlgoTrading.Broker
                 {
                     Cash = previousMarketState.Cash,
                     Equity = previousMarketState.Equity,
-                    PreviousStockBar = previousState.CurrentStockBar,
-                    CurrentStockBar = nextBar,
-                    PreviousIndicators = previousState.CurrentIndicators,
-                    CurrentIndicators = nextIndicators,
                     PreviousPosition = previousState.CurrentPosition,
                 };
 
                 if (!(previousMarketState.CurrentPosition is ClosedPosition))
+                {
                     newMarketState.CurrentPosition = previousMarketState.CurrentPosition;
+                    newMarketState.PreviousStockBar = previousState.CurrentStockBar;
+                    newMarketState.CurrentStockBar = nextBar;
+                    newMarketState.PreviousIndicators = previousState.CurrentIndicators;
+                    newMarketState.CurrentIndicators = nextIndicators;
+                }
                 else
+                {
                     newMarketState.CurrentPosition = null;
+                    newMarketState.PreviousStockBar = previousState.PreviousStockBar;
+                    newMarketState.CurrentStockBar = previousMarketState.CurrentStockBar;
+                    newMarketState.PreviousIndicators = previousState.PreviousIndicators;
+                    newMarketState.CurrentIndicators = previousMarketState.CurrentIndicators;
+                }
+
+                if (newMarketState.CurrentPosition != null)
+                    newMarketState.Equity = newMarketState.CurrentPosition.GetPositionValue(newMarketState.CurrentStockBar);
             }
 
             public NextMarketStateBuilder CanEnterPosition(MarketPosition newPosition, out bool value)
@@ -125,11 +136,10 @@ namespace AlgoTrading.Broker
 
                 openPosition = position.Open(newMarketState.CurrentStockBar);
 
-                if ((newMarketState.CurrentPosition == null || (newMarketState.CurrentPosition != null && newMarketState.CurrentPosition is ClosedPosition))
-                    && newMarketState.Cash - openPosition.GetTotalOpenCharge() < 0)
+                if (newMarketState.CurrentPosition != null && !(newMarketState.CurrentPosition is ClosedPosition))
                     return false;
-                else if (newMarketState.CurrentPosition != null && newMarketState.CurrentPosition is OpenPosition currentPosition && !(newMarketState.CurrentPosition is ClosedPosition) 
-                    && newMarketState.Cash + currentPosition.GetProjectedClosingCharge(newMarketState.CurrentStockBar) - openPosition.GetTotalOpenCharge() < 0)
+
+                if (newMarketState.Cash - openPosition.GetTotalOpenCharge() < 0)
                     return false;
 
                 return true;
@@ -167,7 +177,7 @@ namespace AlgoTrading.Broker
             public NextMarketStateBuilder ExitOpenPosition(out ClosedPosition closedPosition)
             {
                 ClosedPosition position;
-                if(TryCreateClosedPosition(out position))
+                if (TryCreateClosedPosition(out position))
                 {
                     decimal positionGain = position.GetTotalClosingCharge();
 
@@ -185,7 +195,7 @@ namespace AlgoTrading.Broker
             public MarketState GetNextState()
             {
                 return newMarketState;
-            }           
+            }
         }
     }
 

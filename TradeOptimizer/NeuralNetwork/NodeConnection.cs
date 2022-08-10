@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using MathNet.Numerics;
-using Newtonsoft.Json;
-
-namespace AlgoTrading.Neural
+﻿namespace AlgoTrading.Neural
 {
     public class NodeConnection
     {

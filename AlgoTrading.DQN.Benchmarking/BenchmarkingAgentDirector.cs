@@ -1,9 +1,6 @@
-﻿using System;
+﻿using AlgoTrading.Agent.Benchmarking;
+using AlgoTrading.DQN.Statistics;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.DQN;
-using AlgoTrading.Agent.Benchmarking;
 
 namespace AlgoTrading.DQN.Benchmarking
 {

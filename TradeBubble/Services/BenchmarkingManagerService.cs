@@ -1,20 +1,9 @@
-﻿using AlgoTrading.DQN;
-using AlgoTrading.DQN.Benchmarking;
-using AlgoTrading.Neural;
-using AlgoTrading.Neural.Persistence;
-using AlgoTrading.Agent.Learning;
-using AlgoTrading.Agent.Benchmarking;
-using AlgoTrading.Stocks;
-using AlgoTrading.Stocks.Persistence;
-using AlgoTrading.Broker;
-using AlgoTrading.Broker.Simulated;
-using System;
-using System.Collections.Generic;
+﻿using AlgoTrading.Neural.Persistence;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections.Concurrent;
 
 
 namespace TradeBubble.Services

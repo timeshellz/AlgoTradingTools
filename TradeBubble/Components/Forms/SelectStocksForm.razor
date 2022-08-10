@@ -9,40 +9,40 @@
 
 <CellPage>
     <ContentCell ColumnWidth="6" CellTitle="Downloaded Stocks">
-        <SfGrid @ref="availableStocks" DataSource="@AvailableStocks" TValue="IntervalStockIdentifier" AllowPaging="true" AllowSorting="true">
+        <SfGrid @ref="availableStocks" DataSource="@AvailableStocks" TValue="StockIdentifier" AllowPaging="true" AllowSorting="true">
             <GridPageSettings PageSize="10" />
             <GridColumns>
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.Name)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.Name)}")"
                             HeaderText="Name" IsPrimaryKey="true" />
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.FIGI)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.FIGI)}")"
                             HeaderText="Name" IsPrimaryKey="true" />
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Interval)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.Interval)}")"
                             HeaderText="Interval" IsPrimaryKey="true" />
             </GridColumns>
-            <GridEvents TValue="IntervalStockIdentifier" OnRecordDoubleClick="OnAvailableRowDoubleClick"></GridEvents>
+            <GridEvents TValue="StockIdentifier" OnRecordDoubleClick="OnAvailableRowDoubleClick"></GridEvents>
             <GridSortSettings>
                 <GridSortColumns>
-                    <GridSortColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.Name)}")" 
+                    <GridSortColumn Field="@($"{nameof(StockIdentifier.Name)}")" 
                                     Direction="SortDirection.Ascending" />
                 </GridSortColumns>
             </GridSortSettings>         
         </SfGrid>
     </ContentCell>
     <ContentCell ColumnWidth="6" CellTitle="Selected Stocks">
-        <SfGrid @ref="selectedStocks" DataSource="@SelectedStocks" TValue="IntervalStockIdentifier" AllowPaging="true" AllowSorting="true">
+        <SfGrid @ref="selectedStocks" DataSource="@SelectedStocks" TValue="StockIdentifier" AllowPaging="true" AllowSorting="true">
             <GridPageSettings PageSize="10" />
             <GridColumns>
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.Name)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.Name)}")"
                             HeaderText="Name" IsPrimaryKey="true" />
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.FIGI)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.FIGI)}")"
                             HeaderText="Name" IsPrimaryKey="true" />
-                <GridColumn Field="@($"{nameof(IntervalStockIdentifier.Interval)}")"
+                <GridColumn Field="@($"{nameof(StockIdentifier.Interval)}")"
                             HeaderText="Interval" IsPrimaryKey="true" />
             </GridColumns>
-            <GridEvents TValue="IntervalStockIdentifier" OnRecordDoubleClick="OnSelectedStockRowDoubleClick"></GridEvents>
+            <GridEvents TValue="StockIdentifier" OnRecordDoubleClick="OnSelectedStockRowDoubleClick"></GridEvents>
             <GridSortSettings>
                 <GridSortColumns>
-                    <GridSortColumn Field="@($"{nameof(IntervalStockIdentifier.Identifier)}.{nameof(StockIdentifier.Name)}")"
+                    <GridSortColumn Field="@($"{nameof(StockIdentifier.Name)}")"
                                     Direction="SortDirection.Ascending" />
                 </GridSortColumns>
             </GridSortSettings>
@@ -51,16 +51,16 @@
 </CellPage>
 
 @code {
-    private SfGrid<IntervalStockIdentifier> availableStocks;
-    private SfGrid<IntervalStockIdentifier> selectedStocks;
+    private SfGrid<StockIdentifier> availableStocks;
+    private SfGrid<StockIdentifier> selectedStocks;
 
     [Parameter]
-    public List<IntervalStockIdentifier> AvailableStocks { get; set; }
+    public List<StockIdentifier> AvailableStocks { get; set; }
 
     [Parameter]
-    public List<IntervalStockIdentifier> SelectedStocks { get; set; }
+    public List<StockIdentifier> SelectedStocks { get; set; }
 
-    public void OnAvailableRowDoubleClick(RecordDoubleClickEventArgs<IntervalStockIdentifier> args)
+    public void OnAvailableRowDoubleClick(RecordDoubleClickEventArgs<StockIdentifier> args)
     {
         if (!SelectedStocks.Contains(args.RowData))
             SelectedStocks.Add(args.RowData);
@@ -68,7 +68,7 @@
         selectedStocks.Refresh();
     }
 
-    public void OnSelectedStockRowDoubleClick(RecordDoubleClickEventArgs<IntervalStockIdentifier> args)
+    public void OnSelectedStockRowDoubleClick(RecordDoubleClickEventArgs<StockIdentifier> args)
     {
         SelectedStocks.Remove(args.RowData);
 

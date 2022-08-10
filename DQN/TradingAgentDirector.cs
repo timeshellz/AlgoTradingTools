@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
-using AlgoTrading.Agent;
+﻿using AlgoTrading.Agent;
 using AlgoTrading.Broker;
+using System;
+using System.Threading.Tasks;
 
 namespace AlgoTrading.DQN
 {
@@ -18,7 +16,7 @@ namespace AlgoTrading.DQN
             AgentBroker = Agent.Broker;
         }
 
-        protected virtual async Task<int> DirectIteration(int maxInteractions)
+        protected virtual async Task<int> DirectIteration(int maxInteractions, bool collectMemories = true)
         {
             int iterationInteractionCount = 0;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AlgoTrading.Agent.Persistence
+﻿namespace AlgoTrading.Agent.Persistence
 {
     public interface IAgentPersistenceManager
     {

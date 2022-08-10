@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AlgoTrading.DQN.Benchmarking
+﻿namespace AlgoTrading.DQN.Benchmarking
 {
     class BenchmarkResult
     {

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlgoTrading.Agent\AlgoTrading.Agent.csproj" />
+    <ProjectReference Include="..\AlgoTrading.DQN.Statistics\AlgoTrading.DQN.Statistics.csproj" />
     <ProjectReference Include="..\AlgoTrading.Statistics\AlgoTrading.Statistics.csproj" />
     <ProjectReference Include="..\StockData\AlgoTrading.Stocks.csproj" />
   </ItemGroup>

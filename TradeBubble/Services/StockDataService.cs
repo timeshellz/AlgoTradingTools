@@ -1,19 +1,13 @@
-﻿using AlgoTrading.DQN;
-using AlgoTrading.Stocks;
+﻿using AlgoTrading.Stocks;
+using AlgoTrading.Stocks.Persistence;
 using AlgoTrading.Stocks.Tinkoff;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Channels;
 using Tinkoff.InvestApi;
-using Tinkoff.InvestApi.V1;
-using Microsoft.EntityFrameworkCore;
-using AlgoTrading.Stocks.Persistence;
-using System.Diagnostics;
-using System.Collections.Concurrent;
 
 namespace TradeBubble.Services
 {
@@ -55,7 +49,7 @@ namespace TradeBubble.Services
 
         private async Task ManageQueue(ConcurrentQueue<Func<CancellationToken, ValueTask>> queue, CancellationToken stoppingToken)
         {
-            while(true)
+            while (true)
             {
                 while (queue.IsEmpty)
                     await Task.Delay(300);
@@ -70,10 +64,10 @@ namespace TradeBubble.Services
             }
         }
 
-        public static void DownloadStocks(List<StockIdentifier> stocks, DataInterval interval, DateTime start, DateTime end)
+        public static void DownloadStocks(List<StockIdentifier> stocks, DateTime start, DateTime end)
         {
-            foreach(var stockId in stocks)
-            {                
+            foreach (var stockId in stocks)
+            {
                 downloadQueue.Enqueue(async (token) =>
                 {
                     StockData stockData = null;
@@ -81,9 +75,12 @@ namespace TradeBubble.Services
 
                     try
                     {
-                        stockData = await stockLoader.GetStock(stockId, interval, start, end);
+                        stockData = await stockLoader.GetStock(stockId, start, end);
 
-                        await persistenceManager.SaveStockData(stockData);
+                        if (stockData.Bars.Count == 0)
+                            success = false;
+                        else
+                            await persistenceManager.SaveStockData(stockData);
                     }
                     catch (Exception e)
                     {
@@ -92,10 +89,10 @@ namespace TradeBubble.Services
 
                     StockDataLoaded?.Invoke(instance, new StockDataLoadedEventArgs(stockData, DataType.Downloaded, success));
                 });
-            }            
+            }
         }
 
-        public static void GetSavedStockData(IntervalStockIdentifier identifier)
+        public static void GetSavedStockData(StockIdentifier identifier)
         {
             fetchQueue.Enqueue(async (token) =>
             {
@@ -125,10 +122,10 @@ namespace TradeBubble.Services
         {
             fetchQueue.Enqueue(async (token) =>
             {
-                StockDataFetched?.Invoke(instance, 
+                StockDataFetched?.Invoke(instance,
                     new StockDataFetchedEventArgs(await persistenceManager.LoadStockIdentifiers(interval), interval, DataType.Saved));
             });
-        }          
+        }
 
         public static void FetchSavedStocks()
         {
@@ -136,7 +133,7 @@ namespace TradeBubble.Services
             {
                 var result = await persistenceManager.LoadStockIdentifiers();
 
-                foreach(var keyValue in result)
+                foreach (var keyValue in result)
                 {
                     StockDataFetched?.Invoke(instance,
                     new StockDataFetchedEventArgs(keyValue.Value, keyValue.Key, DataType.Saved));
@@ -145,7 +142,7 @@ namespace TradeBubble.Services
         }
     }
 
-    public enum DataType { Available, Downloaded, Saved, Unknown}
+    public enum DataType { Available, Downloaded, Saved, Unknown }
 
     public abstract class StockDataServiceEventArgs : EventArgs
     {
@@ -174,7 +171,7 @@ namespace TradeBubble.Services
     {
         public List<StockIdentifier> StockIdentifiers { get; }
 
-        public DataInterval Interval { get;  }
+        public DataInterval Interval { get; }
 
         public StockDataFetchedEventArgs(List<StockIdentifier> stockIdentifiers, DataInterval interval, DataType type) : base(true, type)
         {

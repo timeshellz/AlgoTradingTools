@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace AlgoTrading.Stocks.Persistence.Database
 {
@@ -23,7 +19,7 @@ namespace AlgoTrading.Stocks.Persistence.Database
             modelBuilder.Entity<StockInfoDTO>().ToTable("StockInfos");
 
             modelBuilder.Entity<StockDataDTO>()
-                .HasKey(nameof(StockDataDTO.FIGI), nameof(StockDataDTO.Interval));
+                .HasKey(nameof(StockDataDTO.FIGI), nameof(StockDataDTO.Id));
         }
 
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace AlgoTrading.Neural
 {
@@ -44,7 +43,7 @@ namespace AlgoTrading.Neural
 
         public void SetTemporalDifference(double newTemporalDifference)
         {
-            AbsoluteTemporalDifference = Math.Abs(newTemporalDifference);
+            AbsoluteTemporalDifference = Math.Sqrt(Math.Abs(newTemporalDifference));
         }
 
         public void CompleteMemory()

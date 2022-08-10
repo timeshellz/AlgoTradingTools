@@ -1,9 +1,11 @@
-using AlgoTrading.Stocks.Persistence;
-using AlgoTrading.Stocks.Persistence.Database;
-using AlgoTrading.Stocks;
+using AlgoTrading.Broker.Simulated;
 using AlgoTrading.Neural.Persistence;
 using AlgoTrading.Neural.Persistence.Database;
-using AlgoTrading.Broker.Simulated;
+using AlgoTrading.Stocks;
+using AlgoTrading.Stocks.Persistence;
+using AlgoTrading.Stocks.Persistence.Database;
+using AlgoTrading.DQN.Statistics.Persistence;
+using AlgoTrading.DQN.Statistics.Persistence.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -50,15 +52,20 @@ namespace TradeBubble
             services.AddHostedService<StockDataService>();
 
             services.AddDbContextFactory<StockDataContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), 
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("AlgoTrading.Stocks.Persistence.Database")));
 
             services.AddDbContextFactory<NeuralDataContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("AlgoTrading.Neural.Persistence.Database")));
 
+            services.AddDbContextFactory<LearningStatisticsDataContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("AlgoTrading.DQN.Statistics.Persistence.Database")));
+
             services.AddSingleton<IStockPersistenceManager, DatabaseStockPersistenceManager>();
             services.AddSingleton<INeuralPersistenceManager, DatabaseNeuralPersistenceManager>();
+            services.AddSingleton<ILearningStatisticsPersistenceManager, LearningStatisticsDatabasePersistenceManager>();
             services.AddSingleton<IIndicatorProvider, SkenderIndicatorProvider>();
         }
 
